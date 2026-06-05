@@ -345,7 +345,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
           .bg-slate-50\/50 { background-color: #111827cf !important; }
           .bg-emerald-50\/40 { background-color: #064e3b55 !important; }
           .text-slate-800, .text-slate-900, .text-slate-950, .text-slate-700 { color: #f1f5f9 !important; }
-          .text-slate-500, .text-slate-600, .text-slate-400 { color: #94a3b8 !important; }
+          .text-slate-500, .text-slate-600, .text-slate-400 { color: ##cbd5e1 !important; }
           .border-slate-200, .border-slate-150, .border-slate-300, .border-slate-200\/60 { border-color: #334155 !important; }
           input, select, textarea { background-color: #1e293b !important; color: #ffffff !important; border-color: #475569 !important; }
           .bg-slate-100 { background-color: #334155 !important; color: #f1f5f9 !important; }
@@ -841,7 +841,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                         className={`p-4 rounded-xl border flex items-start space-x-3 transition duration-150 ${
                           unlocked 
                             ? 'bg-slate-50/50 border-slate-200' 
-                            : 'bg-slate-100/40 border-slate-200 opacity-50 select-none'
+                            : 'bg-slate-100/40 border-slate-200 opacity-75 select-none'
                         }`}
                       >
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl shrink-0 shadow-sm bg-gradient-to-tr ${unlocked ? badge.color : 'from-slate-300 to-slate-400'}`}>
@@ -849,7 +849,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                         </div>
                         <div>
                           <h4 className="font-bold text-xs text-slate-900">{badge.name}</h4>
-                          <p className="text-[10px] text-slate-500 mt-0.5 leading-tight">{badge.desc}</p>
+                          <p className="text-[10px] text-slate-700 mt-0.5 leading-tight">{badge.desc}</p>
                           <span className={`inline-block text-[8px] font-extrabold tracking-wider uppercase mt-1.5 ${unlocked ? 'text-emerald-400' : 'text-slate-400'}`}>
                             {unlocked ? '● Active' : 'Locked'}
                           </span>
