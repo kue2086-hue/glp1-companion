@@ -139,7 +139,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   const [hasCelebratedBirthday, setHasCelebratedBirthday] = useState(false);
 
   const [logDate, setLogDate] = useState(new Date().toISOString().split('T')[0]);
-  const [logWeight, setLogWeight] = useState('); 
+  const [logWeight, setLogWeight] = useState(''); 
   const [logSystolic, setLogSystolic] = useState('');
   const [logDiastolic, setLogDiastolic] = useState('');
   const [logSite, setLogSite] = useState('Left Thigh');
