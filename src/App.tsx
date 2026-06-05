@@ -122,8 +122,8 @@ export default function App() {
   const [themeMode, setThemeMode] = useState('device'); 
   const [resolvedDark, setResolvedDark] = useState(false);
 
-  const [selectedMed, setSelectedMed] = useState(MEDICATIONS[0]);
-  const [userDoseSchedule, setUserDoseSchedule] = useState('0.25mg');
+  const [selectedMed, setSelectedMed] = useState(() => { const saved = localStorage.getItem('glp1_selectedMed'); return saved ? JSON.parse(saved) : MEDICATIONS[0]; });
+  const [userDoseSchedule, setUserDoseSchedule] = useState(() => localStorage.getItem('glp1_doseSchedule') || '0.25mg');
 
   const [weightGoal, setWeightGoal] = useState(215); 
   const [userBirthday, setUserBirthday] = useState('1988-06-04'); 
