@@ -850,7 +850,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                         <div>
                           <h4 className="font-bold text-xs text-slate-900">{badge.name}</h4>
                           <p className="text-[10px] text-slate-500 mt-0.5 leading-tight">{badge.desc}</p>
-                          <span className={`inline-block text-[8px] font-extrabold tracking-wider uppercase mt-1.5 ${unlocked ? 'text-emerald-700' : 'text-slate-400'}`}>
+                          <span className={`inline-block text-[8px] font-extrabold tracking-wider uppercase mt-1.5 ${unlocked ? 'text-emerald-400' : 'text-slate-400'}`}>
                             {unlocked ? '● Active' : 'Locked'}
                           </span>
                         </div>
@@ -1297,9 +1297,11 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                         <span className="bg-white border border-slate-200 text-slate-700 text-xs font-bold px-2.5 py-1 rounded-lg">
                           📍 {entry.site === 'Other' ? entry.siteCustom : entry.site}
                         </span>
+                        {(entry.systolic > 0 || entry.diastolic > 0) && (
                         <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${getBPCategoryColor(bpEvaluation.color)}`}>
                           🩺 {entry.systolic}/{entry.diastolic} mmHg
                         </span>
+                        )}
                       </div>
                     </div>
 
