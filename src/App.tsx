@@ -602,7 +602,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
               </div>
             </div>
 
-            <nav className="flex space-x-1 md:space-x-2 items-center">
+            <nav className="hidden md:flex space-x-1 md:space-x-2 items-center">
               <button
                 onClick={() => setActiveTab('dashboard')}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
