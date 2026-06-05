@@ -127,7 +127,10 @@ export default function App() {
 
   const [weightGoal, setWeightGoal] = useState(215); 
   const [userBirthday, setUserBirthday] = useState('1988-06-04'); 
-  const [showWelcomeModal, setShowWelcomeModal] = useState(true); 
+  const [showWelcomeModal, setShowWelcomeModal] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+const [onboardingWeight, setOnboardingWeight] = useState('');
+const [onboardingGoal, setOnboardingGoal] = useState(''); 
   
   const [celebrationsEnabled, setCelebrationsEnabled] = useState(true);
   const [goalCelebrationActive, setGoalCelebrationActive] = useState(false);
@@ -459,6 +462,61 @@ export default function App() {
       )}
 
       {}
+{showOnboarding && (
+  <div className="fixed inset-0 bg-slate-950/65 backdrop-blur-md flex items-center justify-center p-4 z-50">
+    <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 md:p-8 space-y-6">
+      <div className="text-center space-y-2">
+        <div className="w-16 h-16 bg-emerald-100 text-emerald-800 rounded-2xl flex items-center justify-center mx-auto text-3xl shadow-sm">⚙️</div>
+        <h3 className="text-2xl font-black text-slate-900 tracking-tight">Let's Set Up Your Profile</h3>
+        <p className="text-slate-500 text-sm">Enter your starting details so your dashboard is personalized from day one.</p>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Current Weight (lbs)</label>
+          <input
+            type="number"
+            placeholder="e.g. 285"
+            value={onboardingWeight}
+            onChange={(e) => setOnboardingWeight(e.target.value)}
+            className="bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Goal Weight (lbs)</label>
+          <input
+            type="number"
+            placeholder="e.g. 220"
+            value={onboardingGoal}
+            onChange={(e) => setOnboardingGoal(e.target.value)}
+            className="bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Your Medication</label>
+          <select
+            value={selectedMed.id}
+            onChange={(e) => { const m = MEDICATIONS.find(x => x.id === e.target.value); if(m) { setSelectedMed(m); setUserDoseSchedule(m.doses[0]); }}}
+            className="bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5"
+          >
+            {MEDICATIONS.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+          </select>
+        </div>
+      </div>
+
+      <button
+        onClick={() => {
+          if (onboardingWeight) setWeightGoal(parseFloat(onboardingGoal) || 215);
+          setShowOnboarding(false);
+          setActiveTab('dashboard');
+        }}
+        className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm shadow-md transition duration-150"
+      >
+        Take Me To My Dashboard 🚀
+      </button>
+    </div>
+  </div>
+)}
       {showWelcomeModal && (
         <div className="fixed inset-0 bg-slate-950/65 backdrop-blur-md flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 md:p-8 text-center space-y-6">
@@ -484,15 +542,16 @@ export default function App() {
               className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm shadow-md transition duration-150 transform hover:scale-[1.02]"
             >
               Start Tracking with Confidence 🚀
-              <button
+ <button
   onClick={() => {
     setEntries([]);
     localStorage.removeItem('glp1_entries');
     setShowWelcomeModal(false);
+    setShowOnboarding(true);
   }}
   className="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-sm transition duration-150 mt-2"
 >
-  Start Fresh (Clear Demo Data) 🗑️
+  Start Fresh (New User Setup) 🗑️
 </button>
             </button>
           </div>
