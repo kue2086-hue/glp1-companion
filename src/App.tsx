@@ -505,11 +505,28 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
       </div>
 
       <button
-        onClick={() => {
-          if (onboardingWeight) setWeightGoal(parseFloat(onboardingGoal) || 215);
-          setShowOnboarding(false);
-          setActiveTab('dashboard');
-        }}
+ onClick={() => {
+              if (onboardingGoal) setWeightGoal(parseFloat(onboardingGoal) || 215);
+              if (onboardingWeight) {
+                const firstEntry = {
+                  week: 1,
+                  date: new Date().toISOString().split('T')[0],
+                  medication: selectedMed.name,
+                  dose: userDoseSchedule,
+                  weight: parseFloat(onboardingWeight),
+                  systolic: 0,
+                  diastolic: 0,
+                  site: '',
+                  sideEffects: { nausea: 0, fatigue: 0, headache: 0, reflux: 0, constipation: 0 },
+                  journalTitle: 'Starting Weight',
+                  journalText: 'My starting point on this journey.',
+                };
+                setEntries([firstEntry]);
+                localStorage.setItem('glp1_entries', JSON.stringify([firstEntry]));
+              }
+              setShowOnboarding(false);
+              setActiveTab('dashboard');
+            }}
         className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm shadow-md transition duration-150"
       >
         Take Me To My Dashboard 🚀
