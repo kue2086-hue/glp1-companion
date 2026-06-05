@@ -589,7 +589,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
       {}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
+          <div className="flex justify-between min-h-16">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white shadow-md">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -644,6 +644,24 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
               >
                 ⚙️ Settings
               </button>
+            </nav>
+            <nav className="flex md:hidden items-center space-x-1">
+              {[
+                { tab: 'dashboard', icon: '📊', label: 'Home' },
+                { tab: 'log', icon: '💉', label: 'Log' },
+                { tab: 'history', icon: '📓', label: 'Diary' },
+                { tab: 'export', icon: '📄', label: 'Export' },
+                { tab: 'settings', icon: '⚙️', label: 'More' },
+              ].map(({ tab, icon, label }) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`flex flex-col items-center px-2 py-1 rounded-lg transition-colors ${activeTab === tab ? 'bg-emerald-50 text-emerald-700' : 'text-slate-500 hover:text-slate-900'}`}
+                >
+                  <span className="text-lg leading-none">{icon}</span>
+                  <span className="text-[10px] font-semibold mt-0.5">{label}</span>
+                </button>
+              ))}
             </nav>
           </div>
         </div>
