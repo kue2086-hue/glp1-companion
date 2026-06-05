@@ -139,21 +139,21 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   const [hasCelebratedBirthday, setHasCelebratedBirthday] = useState(false);
 
   const [logDate, setLogDate] = useState(new Date().toISOString().split('T')[0]);
-  const [logWeight, setLogWeight] = useState('214.5'); 
-  const [logSystolic, setLogSystolic] = useState('117');
-  const [logDiastolic, setLogDiastolic] = useState('78');
+  const [logWeight, setLogWeight] = useState('); 
+  const [logSystolic, setLogSystolic] = useState('');
+  const [logDiastolic, setLogDiastolic] = useState('');
   const [logSite, setLogSite] = useState('Left Thigh');
   const [logSiteCustom, setLogSiteCustom] = useState('');
   const [logSideEffects, setLogSideEffects] = useState({
-    nausea: 1,
-    fatigue: 1,
+    nausea: 0,
+    fatigue: 0,
     headache: 0,
     reflux: 0,
-    constipation: 2
+    constipation: 0
   });
   
-  const [logJournalTitle, setLogJournalTitle] = useState('Reaching my goal weight!');
-  const [logJournalText, setLogJournalText] = useState('Unbelievable! I weighed in below my goal of 215 today! The journey is going incredibly well. Energy is steady, and water intake is high.');
+  const [logJournalTitle, setLogJournalTitle] = useState('');
+  const [logJournalText, setLogJournalText] = useState('');
   const [mockPhotoUploaded, setMockPhotoUploaded] = useState(false);
 
   const [selectedWeeksForReport, setSelectedWeeksForReport] = useState([1, 2, 3]);
@@ -559,7 +559,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
               className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm shadow-md transition duration-150 transform hover:scale-[1.02]"
             >
               Start Tracking with Confidence 🚀
- <button
+ {entries.length <= 3 && (<button
   onClick={() => {
     setEntries([]);
     localStorage.removeItem('glp1_entries');
@@ -570,6 +570,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
 >
   Start Fresh (New User Setup) 🗑️
 </button>
+)}
             </button>
           </div>
         </div>
@@ -819,26 +820,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => {
-                      setHasCelebratedGoal(false);
-                      triggerGoalCelebration();
-                    }}
-                    className="w-full py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-lg text-[11px] font-bold transition text-center"
-                  >
-                    🏆 Test Goal Cheer
-                  </button>
-                  <button
-                    onClick={() => {
-                      setHasCelebratedBirthday(false);
-                      triggerBirthdayCelebration();
-                    }}
-                    className="w-full py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 rounded-lg text-[11px] font-bold transition text-center"
-                  >
-                    🎂 Test Birthday
-                  </button>
-                </div>
+
               </div>
 
               <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm lg:col-span-2 space-y-4">
