@@ -142,6 +142,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   const [logWeight, setLogWeight] = useState(''); 
   const [logSystolic, setLogSystolic] = useState('');
   const [logDiastolic, setLogDiastolic] = useState('');
+  const [logHeartRate, setLogHeartRate] = useState('');
   const [logSite, setLogSite] = useState('Left Thigh');
   const [logSiteCustom, setLogSiteCustom] = useState('');
   const [logSideEffects, setLogSideEffects] = useState({
@@ -275,8 +276,9 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
       medication: selectedMed.name,
       dose: userDoseSchedule,
       weight: newWeight,
-      systolic: parseInt(logSystolic) || 120,
-      diastolic: parseInt(logDiastolic) || 80,
+      systolic: parseInt(logSystolic) || 0,
+      diastolic: parseInt(logDiastolic) || 0,
+      heartRate: parseInt(logHeartRate) || 0,
       site: logSite,
       siteCustom: logSite === 'Other' ? logSiteCustom : '',
       sideEffects: { ...logSideEffects },
@@ -743,11 +745,18 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                       const status = evaluateBP(latest.systolic, latest.diastolic);
                       return (
                         <>
-                          <div className="flex items-baseline space-x-1 mt-1">
-                            <span className="text-3xl font-extrabold text-slate-900">{latest.systolic}/{latest.diastolic}</span>
-                            <span className="text-slate-500 font-semibold text-xs">mmHg</span>
-                          </div>
-                          <span className={`inline-block text-[10px] font-semibold mt-2 px-2 py-0.5 rounded border ${getBPCategoryColor(status.color)}`}>
+<div className="flex items-baseline space-x-1 mt-1">
+                      <span className="text-3xl font-extrabold text-slate-900">
+                        {latest.systolic && latest.diastolic ? `${latest.systolic}/${latest.diastolic}` : '—'}
+                      </span>
+                      <span className="text-slate-500 font-semibold text-xs">mmHg</span>
+                    </div>
+                    {latest.heartRate > 0 && (
+                      <div className="flex items-center space-x-1 mt-1">
+                        <span className="text-sm font-bold text-rose-500">♥ {latest.heartRate}</span>
+                        <span className="text-slate-400 text-xs">bpm</span>
+                      </div>
+                    )}                          <span className={`inline-block text-[10px] font-semibold mt-2 px-2 py-0.5 rounded border ${getBPCategoryColor(status.color)}`}>
                             ● {status.category}
                           </span>
                         </>
@@ -1041,7 +1050,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                   <h3 className="font-bold text-slate-900">Vitals & Weight Tracking</h3>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Weight (lbs)</label>
                     <input
@@ -1062,7 +1071,6 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                       placeholder="Top number, e.g. 118"
                       value={logSystolic}
                       onChange={(e) => setLogSystolic(e.target.value)}
-                      required
                       className="bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5"
                     />
                   </div>
@@ -1073,11 +1081,20 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                       placeholder="Bottom number, e.g. 78"
                       value={logDiastolic}
                       onChange={(e) => setLogDiastolic(e.target.value)}
-                      required
                       className="bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5"
                     />
                   </div>
                 </div>
+                <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Heart Rate <span className="normal-case text-slate-400 font-normal">(optional)</span></label>
+                <input
+                  type="number"
+                  placeholder="BPM, e.g. 72"
+                  value={logHeartRate}
+                  onChange={(e) => setLogHeartRate(e.target.value)}
+                  className="bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5"
+                />
+              </div>
 
                 {}
                 {logSystolic && logDiastolic && (
