@@ -776,28 +776,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                 <p className="text-[10px] text-slate-400 mt-3">AHA ranges tracked locally.</p>
               </div>
 
-              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col justify-between">
-                <div>
-                  <span className="text-xs font-bold text-slate-400 tracking-wider uppercase">Active Side Effects</span>
-                  <div className="mt-2 space-y-1">
-                    {entries.length > 0 && Object.entries(entries[entries.length - 1].sideEffects).some(([_, val]) => val > 0) ? (
-                      Object.entries(entries[entries.length - 1].sideEffects)
-                        .filter(([_, val]) => val > 0)
-                        .slice(0, 3)
-                        .map(([key, value]) => (
-                          <div key={key} className="flex justify-between items-center text-xs">
-                            <span className="capitalize text-slate-600">{key}</span>
-                            <span className="bg-slate-100 text-slate-800 font-bold px-1.5 py-0.5 rounded text-[10px]">Lvl {value}</span>
-                          </div>
-                        ))
-                    ) : (
-                      <span className="text-slate-500 text-sm">No side effects logged recently! 🙌</span>
-                    )}
-                  </div>
-                </div>
-                <p className="text-[10px] text-slate-400 mt-3">Weekly average logged.</p>
-              </div>
-            </div>
+              
 
             {}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
