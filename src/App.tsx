@@ -732,6 +732,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                   <div className="mt-1">
                     <span className="text-2xl font-bold text-slate-900">{(() => { const last = entries[entries.length - 1]; if (!last) return 'No shots logged'; const lastDate = new Date(last.date); const nextDate = new Date(lastDate); nextDate.setDate(lastDate.getDate() + 7); const today = new Date(); const diffMs = nextDate - today; const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24)); if (diffDays < 0) return 'Overdue!'; if (diffDays === 0) return 'Today!'; if (diffDays === 1) return 'Tomorrow!'; return `In ${diffDays} Days`; })()}</span>
                     <p className="text-xs text-slate-500 mt-1">{userDoseSchedule} of {selectedMed.name}</p>
+                    <p className="text-[11px] text-slate-400 mt-1">{(() => { const last = entries[entries.length - 1]; return last ? `Last shot: ${last.date}` : ''; })()}</p>
                   </div>
                 </div>
                 <button 
