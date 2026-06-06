@@ -958,7 +958,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
           </div>
         
 
-        {}
+        )}
         {activeTab === 'log' && (
           <div className="max-w-3xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="bg-slate-900 text-white p-6">
