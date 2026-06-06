@@ -748,7 +748,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                   <span className="text-xs font-bold text-slate-400 tracking-wider uppercase">Last Recorded BP</span>
                   {entries.length > 0 ? (
                     (() => {
-                      const latest = entries[entries.length - 1];
+                      const latest = [...entries].reverse().find(e => e.systolic > 0 && e.diastolic > 0) || entries[entries.length - 1];
                       const status = evaluateBP(latest.systolic, latest.diastolic);
                       return (
                         <>
