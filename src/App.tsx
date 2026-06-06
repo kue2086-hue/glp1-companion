@@ -956,7 +956,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
               </div>
             </div>
           </div>
-        )}
+        
 
         {}
         {activeTab === 'log' && (
