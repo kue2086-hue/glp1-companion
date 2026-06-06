@@ -773,6 +773,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                     <p className="text-slate-500 text-sm mt-1">No measurements logged.</p>
                   )}
                 </div>
+                <p className="text-[10px] text-slate-400 mt-2">{(() => { const last = [...entries].reverse().find(e => e.systolic > 0 && e.diastolic > 0); if (!last || !last.date) return ''; const [y, m, d] = last.date.split('-'); return `Recorded ${m}-${d}-${y}`; })()}</p>
                 <p className="text-[10px] text-slate-400 mt-3">AHA ranges tracked locally.</p>
               </div>
 
