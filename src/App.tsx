@@ -732,7 +732,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                   <div className="mt-1">
                     <span className="text-2xl font-bold text-slate-900">{(() => { const last = entries[entries.length - 1]; if (!last) return 'No shots logged'; const lastDate = new Date(last.date); const nextDate = new Date(lastDate); nextDate.setDate(lastDate.getDate() + 7); const today = new Date(); const diffMs = nextDate - today; const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24)); if (diffDays < 0) return 'Overdue!'; if (diffDays === 0) return 'Today!'; if (diffDays === 1) return 'Tomorrow!'; return `In ${diffDays} Days`; })()}</span>
                     <p className="text-xs text-slate-500 mt-1">{userDoseSchedule} of {selectedMed.name}</p>
-                    <p className="text-[11px] text-slate-400 mt-1">{(() => { const last = entries[entries.length - 1]; return last ? `Last shot: ${last.date}` : ''; })()}</p>
+                    <p className="text-[11px] text-slate-400 mt-1">{(() => { const last = entries[entries.length - 1]; if (!last || !last.date) return ''; const [y, m, d] = last.date.split('-'); const site = last.site === 'Other' ? last.siteCustom : last.site; return `Last shot: ${m}-${d}-${y}${site ? ' • ' + site : ''}`; })()}</p>
                   </div>
                 </div>
                 <button 
@@ -909,36 +909,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
               </div>
 
               <div className="space-y-6">
-                <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-                  <div>
-                    <h3 className="font-bold text-slate-900 text-base">Site Rotation Log</h3>
-                    <p className="text-xs text-slate-500">Injecting in standard target areas prevents lipohypertrophy.</p>
-                  </div>
-
-                  {}
-                  <div className="border border-slate-200 rounded-xl p-4 bg-slate-50/50 flex flex-col items-center">
-                    
-                    
-                    <div className="space-y-3 flex flex-col justify-between p-4">
-                      <div className="flex justify-between">
-                        <span className="text-[10px] font-bold bg-white border border-slate-200 text-slate-600 px-2 py-0.5 rounded-full shadow-sm">Left Arm</span>
-                        <span className="text-[10px] font-bold bg-white border border-slate-200 text-slate-600 px-2 py-0.5 rounded-full shadow-sm">Right Arm</span>
-                      </div>
-                      <div className="flex justify-between my-auto">
-                        <span className="text-[10px] font-bold bg-white border border-slate-200 text-slate-600 px-2 py-0.5 rounded-full shadow-sm">Left Abdomen</span>
-                        <span className="text-[10px] font-bold bg-white border border-slate-200 text-slate-600 px-2 py-0.5 rounded-full shadow-sm">Right Abdomen</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-[10px] font-bold bg-emerald-100 border border-emerald-300 text-emerald-800 px-2 py-0.5 rounded-full shadow-sm">Left Thigh (Active)</span>
-                        <span className="text-[10px] font-bold bg-white border border-slate-200 text-slate-600 px-2 py-0.5 rounded-full shadow-sm">Right Thigh</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <p className="text-xs text-center text-slate-500 italic">
-                    Last shot was in the <strong className="text-slate-800">{entries[entries.length - 1]?.site || 'Right Thigh'}</strong>. Consider rotating next shot.
-                  </p>
-                </div>
+                
 
                 <div className="bg-amber-50 rounded-2xl border border-amber-200 p-5 space-y-3">
                   <div className="flex items-center space-x-2 text-amber-800">
