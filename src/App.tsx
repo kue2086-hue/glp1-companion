@@ -294,6 +294,11 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
     setActiveTab('history');
   };
 
+  const handleDeleteEntry = (weekNum) => {
+  if (window.confirm('Delete this entry? This cannot be undone.')) {
+    setEntries(entries.filter(e => e.week !== weekNum));
+  }
+};
   const handleToggleReportWeek = (weekNum) => {
     if (selectedWeeksForReport.includes(weekNum)) {
       setSelectedWeeksForReport(selectedWeeksForReport.filter(w => w !== weekNum));
@@ -1268,6 +1273,12 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                           🩺 {entry.systolic}/{entry.diastolic} mmHg
                         </span>
                         )}
+                        <button
+                          onClick={() => handleDeleteEntry(entry.week)}
+                          className="text-rose-500 hover:text-white hover:bg-rose-500 border border-rose-200 text-xs font-bold px-2.5 py-1 rounded-lg transition duration-150"
+                        >
+                          🗑️ Delete
+                        </button>
                       </div>
                     </div>
 
