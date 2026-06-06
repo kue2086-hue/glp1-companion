@@ -1245,7 +1245,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                   <div key={entry.week} className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden transition hover:shadow-sm">
                     <div className="bg-slate-50 px-6 py-4 border-b border-slate-150 flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div className="flex items-center space-x-3">
-                        <div className="px-3 py-1.5 bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-full flex items-center justify-center font-black text-sm shrink-0">
+                        <div className="px-3 py-1.5 bg-emerald-600 text-white border border-emerald-700 rounded-full flex items-center justify-center font-black text-sm shrink-0">
                           <span className="text-[9px] font-bold leading-tight text-center">{(() => { if (!entry.date) return ''; const [y, m, d] = entry.date.split('-'); return `${m}-${d}-${y}`; })()}</span>
                         </div>
                         <div>
