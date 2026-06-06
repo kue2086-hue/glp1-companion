@@ -1186,7 +1186,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                       placeholder="e.g. Week 4 - Feeling stable and consistent"
                       value={logJournalTitle}
                       onChange={(e) => setLogJournalTitle(e.target.value)}
-                      required
+                      
                       className="bg-white border border-slate-200 text-slate-800 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5 font-semibold"
                     />
                   </div>
@@ -1207,7 +1207,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                       placeholder="Write freely here. Record symptoms, emotional state, food noise level, digestion patterns, or lifestyle adaptations."
                       value={logJournalText}
                       onChange={(e) => setLogJournalText(e.target.value)}
-                      required
+                      
                       className="bg-white border border-slate-200 text-slate-800 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5"
                     />
                   </div>
