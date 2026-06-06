@@ -916,10 +916,10 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                   </div>
 
                   {}
-                  <div className="relative border border-slate-200 rounded-xl p-4 bg-slate-50/50 flex flex-col items-center">
+                  <div className="border border-slate-200 rounded-xl p-4 bg-slate-50/50 flex flex-col items-center">
                     
                     
-                    <div className="absolute inset-0 flex flex-col justify-between p-4">
+                    <div className="space-y-3 flex flex-col justify-between p-4">
                       <div className="flex justify-between">
                         <span className="text-[10px] font-bold bg-white border border-slate-200 text-slate-600 px-2 py-0.5 rounded-full shadow-sm">Left Arm</span>
                         <span className="text-[10px] font-bold bg-white border border-slate-200 text-slate-600 px-2 py-0.5 rounded-full shadow-sm">Right Arm</span>
