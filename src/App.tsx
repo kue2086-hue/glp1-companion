@@ -304,7 +304,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
 
   const getBPCategoryColor = (color) => {
     if (color === 'green') return 'bg-emerald-100 text-emerald-800 border-emerald-300';
-    if (color === 'yellow') return 'bg-amber-100 text-amber-800 border-amber-300';
+    if (color === 'yellow') return 'bg-amber-200 text-amber-900 border-amber-400 font-bold';
     return 'bg-rose-100 text-rose-800 border-rose-300';
   };
 
