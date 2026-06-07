@@ -1289,7 +1289,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
             </div>
 
             <div className="space-y-6">
-              {[...entries].reverse().map((entry) => {
+              {[...entries].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((entry) => {
                 const bpEvaluation = evaluateBP(entry.systolic, entry.diastolic);
                 
                 return (
