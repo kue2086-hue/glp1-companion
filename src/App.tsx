@@ -653,7 +653,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
 
             <nav className="hidden md:flex space-x-1 md:space-x-2 items-center">
               <button
-                onClick={() => setActiveTab('dashboard')}
+                onClick={() => { setEditingEntryWeek(null); setActiveTab('dashboard'); }}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   activeTab === 'dashboard' ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
@@ -661,7 +661,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                 Dashboard
               </button>
               <button
-                onClick={() => setActiveTab('log')}
+                onClick={() => { setEditingEntryWeek(null); setActiveTab('log'); }}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1 ${
                   activeTab === 'log' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
@@ -704,7 +704,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
               ].map(({ tab, icon, label }) => (
                 <button
                   key={tab}
-                  onClick={() => setActiveTab(tab)}
+                  onClick={() => { setEditingEntryWeek(null); setActiveTab(tab); }}
                   className={`flex flex-col items-center px-2 py-1 rounded-lg transition-colors ${activeTab === tab ? 'bg-emerald-50 text-emerald-700' : 'text-slate-500 hover:text-slate-900'}`}
                 >
                   <span className="text-lg leading-none">{icon}</span>
@@ -787,7 +787,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                   </div>
                 </div>
                 <button 
-                  onClick={() => setActiveTab('log')}
+                  onClick={() => { setEditingEntryWeek(null); setActiveTab('log'); }}
                   className="mt-4 w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold text-xs transition duration-150 flex items-center justify-center space-x-1"
                 >
                   <span>Pre-Log Today's Shot</span>
@@ -1253,7 +1253,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
               <div className="pt-6 border-t border-slate-100 flex justify-end space-x-3">
                 <button
                   type="button"
-                  onClick={() => setActiveTab('dashboard')}
+                  onClick={() => { setEditingEntryWeek(null); setActiveTab('dashboard'); }}
                   className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-sm font-semibold transition"
                 >
                   Cancel
@@ -1278,7 +1278,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                 <p className="text-xs text-slate-500">Every weekly log combined into an intuitive health and wellness journal timeline.</p>
               </div>
               <button
-                onClick={() => setActiveTab('log')}
+                onClick={() => { setEditingEntryWeek(null); setActiveTab('log'); }}
                 className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-lg transition duration-150 flex items-center space-x-1 self-start"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
