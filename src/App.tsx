@@ -158,7 +158,9 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   const [mockPhotoUploaded, setMockPhotoUploaded] = useState(false);
   const [editingEntryWeek, setEditingEntryWeek] = useState(null);
 
-  const [selectedWeeksForReport, setSelectedWeeksForReport] = useState([1, 2, 3]);
+  
+  const [reportStartDate, setReportStartDate] = useState('');
+  const [reportEndDate, setReportEndDate] = useState('');
   const [useAiTranslation, setUseAiTranslation] = useState(true);
   const [reportModalOpen, setReportModalOpen] = useState(false);
   const [showToast, setShowToast] = useState(true);
@@ -1396,19 +1398,27 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
               </div>
 
               <div className="space-y-3">
-                <span className="block text-xs font-bold text-slate-400 uppercase">Select Weeks to Include</span>
-                <div className="space-y-2 max-h-48 overflow-y-auto border border-slate-150 rounded-xl p-3 bg-slate-50">
-                  {entries.map((entry) => (
-                    <label key={entry.week} className="flex items-center space-x-2 text-xs font-medium text-slate-700 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={selectedWeeksForReport.includes(entry.week)}
-                        onChange={() => handleToggleReportWeek(entry.week)}
-                        className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-                      />
-                      <span>Week {entry.week} - {entry.journalTitle} ({entry.weight} lbs)</span>
-                    </label>
-                  ))}
+                <span className="block text-xs font-bold text-slate-400 uppercase">Filter by Date Range</span>
+                <div className="space-y-3 border border-slate-150 rounded-xl p-3 bg-slate-50">
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">From</label>
+                    <input
+                      type="date"
+                      value={reportStartDate}
+                      onChange={(e) => setReportStartDate(e.target.value)}
+                      className="bg-white border border-slate-200 text-slate-800 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">To</label>
+                    <input
+                      type="date"
+                      value={reportEndDate}
+                      onChange={(e) => setReportEndDate(e.target.value)}
+                      className="bg-white border border-slate-200 text-slate-800 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5"
+                    />
+                  </div>
+                  <p className="text-[10px] text-slate-400">Leave both blank to include all entries.</p>
                 </div>
               </div>
 
@@ -1477,7 +1487,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                   </div>
                   <div>
                     <span className="text-slate-400 font-semibold uppercase block">Data Selected</span>
-                    <strong className="text-slate-800 text-sm">{selectedWeeksForReport.length} Weeks Included</strong>
+                    <strong className="text-slate-800 text-sm">{entries.filter(e => (!reportStartDate || e.date >= reportStartDate) && (!reportEndDate || e.date <= reportEndDate)).length} Entries</strong>
                   </div>
                 </div>
 
@@ -1503,7 +1513,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                   <h4 className="font-sans font-extrabold text-xs text-slate-400 uppercase tracking-wider">Weekly Clinical Breakdown</h4>
                   
                   {entries
-                    .filter(e => selectedWeeksForReport.includes(e.week))
+                    .filter(e => (!reportStartDate || e.date >= reportStartDate) && (!reportEndDate || e.date <= reportEndDate))
                     .map((entry) => (
                       <div key={entry.week} className="text-xs space-y-2 pb-4 border-b border-slate-100 last:border-0">
                         <div className="flex justify-between items-center font-sans">
@@ -1740,7 +1750,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
 
             <div className="bg-slate-50 rounded-xl border border-slate-150 p-4 text-left space-y-1.5 text-xs text-slate-600">
               <p>📍 <strong>Medication details:</strong> {selectedMed.name} ({userDoseSchedule})</p>
-              <p>📍 <strong>Total records verified:</strong> {selectedWeeksForReport.length} Weeks</p>
+              <p>📍 <strong>Total records verified:</strong> {entries.filter(e => (!reportStartDate || e.date >= reportStartDate) && (!reportEndDate || e.date <= reportEndDate)).length} Entries</p>
               <p>📍 <strong>AI Clinical translation:</strong> {useAiTranslation ? 'Enabled' : 'Disabled'}</p>
             </div>
 
