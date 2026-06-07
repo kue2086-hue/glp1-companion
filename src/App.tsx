@@ -169,8 +169,9 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   const [reportModalOpen, setReportModalOpen] = useState(false);
   const [showToast, setShowToast] = useState(true);
 
-  const currentWeight = entries.length > 0 ? entries[entries.length - 1].weight : 220;
-  const initialWeight = entries.length > 0 ? entries[0].weight : 224.5;
+  const sortedByDate = [...entries].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const currentWeight = sortedByDate.length > 0 ? sortedByDate[0].weight : 220;
+  const initialWeight = sortedByDate.length > 0 ? sortedByDate[sortedByDate.length - 1].weight : 224.5;
   const totalWeightLoss = (initialWeight - currentWeight).toFixed(1);
 
   const isGoalReached = currentWeight <= weightGoal;
@@ -235,6 +236,21 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
       }
     }
   }, [userBirthday, celebrationsEnabled, hasCelebratedBirthday]);
+  useEffect(() => {
+    if (activeTab === 'log' && editingEntryWeek === null) {
+      setLogDate(new Date().toISOString().split('T')[0]);
+      setLogWeight('');
+      setLogSystolic('');
+      setLogDiastolic('');
+      setLogHeartRate('');
+      setLogSite('Left Thigh');
+      setLogSiteCustom('');
+      setLogSideEffects({ nausea: 0, fatigue: 0, headache: 0, reflux: 0, constipation: 0 });
+      setLogJournalTitle('');
+      setLogJournalText('');
+      setMockPhotoUploaded(false);
+    }
+  }, [activeTab, editingEntryWeek]);
 
   const triggerGoalCelebration = () => {
     setGoalCelebrationActive(true);
@@ -780,9 +796,9 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                 <div>
                   <span className="text-xs font-bold text-slate-400 tracking-wider uppercase">Next Injection</span>
                   <div className="mt-1">
-                    <span className="text-2xl font-bold text-slate-900">{(() => { const last = entries[entries.length - 1]; if (!last) return 'No shots logged'; const lastDate = new Date(last.date); const nextDate = new Date(lastDate); nextDate.setDate(lastDate.getDate() + 7); const today = new Date(); const diffMs = nextDate - today; const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24)); if (diffDays < 0) return 'Overdue!'; if (diffDays === 0) return 'Today!'; if (diffDays === 1) return 'Tomorrow!'; return `In ${diffDays} Days`; })()}</span>
+                    <span className="text-2xl font-bold text-slate-900">{(() => { const last = sortedByDate[0]; if (!last) return 'No shots logged'; const lastDate = new Date(last.date); const nextDate = new Date(lastDate); nextDate.setDate(lastDate.getDate() + 7); const today = new Date(); const diffMs = nextDate - today; const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24)); if (diffDays < 0) return 'Overdue!'; if (diffDays === 0) return 'Today!'; if (diffDays === 1) return 'Tomorrow!'; return `In ${diffDays} Days`; })()}</span>
                     <p className="text-xs text-slate-500 mt-1">{userDoseSchedule} of {selectedMed.name}</p>
-                    <p className="text-[11px] text-slate-400 mt-1">{(() => { const last = entries[entries.length - 1]; if (!last || !last.date) return ''; const [y, m, d] = last.date.split('-'); const site = last.site === 'Other' ? last.siteCustom : last.site; return `Last shot: ${m}-${d}-${y}${site ? ' • ' + site : ''}`; })()}</p>
+                    <p className="text-[11px] text-slate-400 mt-1">{(() => { const last = sortedByDate[0]; if (!last || !last.date) return ''; const [y, m, d] = last.date.split('-'); const site = last.site === 'Other' ? last.siteCustom : last.site; return `Last shot: ${m}-${d}-${y}${site ? ' • ' + site : ''}`; })()}</p>
                   </div>
                 </div>
                 <button 
@@ -798,7 +814,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                   <span className="text-xs font-bold text-slate-400 tracking-wider uppercase">Last Recorded BP</span>
                   {entries.length > 0 ? (
                     (() => {
-                      const latest = [...entries].reverse().find(e => e.systolic > 0 && e.diastolic > 0) || entries[entries.length - 1];
+                      const latest = sortedByDate.find(e => e.systolic > 0 && e.diastolic > 0) || sortedByDate[0];
                       const status = evaluateBP(latest.systolic, latest.diastolic);
                       return (
                         <>
