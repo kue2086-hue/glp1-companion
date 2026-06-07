@@ -157,6 +157,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   const [logJournalText, setLogJournalText] = useState('');
   const [mockPhotoUploaded, setMockPhotoUploaded] = useState(false);
   const [editingEntryWeek, setEditingEntryWeek] = useState(null);
+  const [pendingDeleteWeek, setPendingDeleteWeek] = useState(null);
 
   const [reportStartDate, setReportStartDate] = useState('');
   const [reportEndDate, setReportEndDate] = useState('');
@@ -362,10 +363,13 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   setActiveTab('log');
 };
   const handleDeleteEntry = (weekNum) => {
-  if (window.confirm('Delete this entry? This cannot be undone.')) {
-    setEntries(entries.filter(e => e.week !== weekNum));
-  }
-};
+    setPendingDeleteWeek(weekNum);
+  };
+
+  const confirmDelete = () => {
+    setEntries(entries.filter(e => e.week !== pendingDeleteWeek));
+    setPendingDeleteWeek(null);
+  };
     
 
   const getBPCategoryColor = (color) => {
@@ -839,7 +843,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                     <p className="text-slate-500 text-sm mt-1">No measurements logged.</p>
                   )}
                 </div>
-                <p className="text-[10px] text-slate-400 mt-2">{(() => { const last = [...entries].reverse().find(e => e.systolic > 0 && e.diastolic > 0); if (!last || !last.date) return ''; const [y, m, d] = last.date.split('-'); return `Recorded ${m}-${d}-${y}`; })()}</p>
+                <p className="text-[10px] text-slate-400 mt-2">{(() => { const last = sortedByDate.find(e => e.systolic > 0 && e.diastolic > 0); if (!last || !last.date) return ''; const [y, m, d] = last.date.split('-'); return `Recorded ${m}-${d}-${y}`; })()}</p>
                 <p className="text-[10px] text-slate-400 mt-3">AHA ranges tracked locally.</p>
               </div>
 
@@ -1768,6 +1772,35 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
       </main>
 
       {}
+      {pendingDeleteWeek !== null && (
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-sm w-full p-6 text-center space-y-4">
+            <div className="w-16 h-16 bg-rose-100 text-rose-600 border border-rose-200 rounded-2xl flex items-center justify-center mx-auto text-3xl">
+              🗑️
+            </div>
+
+            <h3 className="text-xl font-black text-slate-950">Delete This Entry?</h3>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              This will permanently remove this log entry from your diary. This action cannot be undone.
+            </p>
+
+            <div className="pt-4 flex space-x-2">
+              <button
+                onClick={() => setPendingDeleteWeek(null)}
+                className="flex-1 py-2.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100 text-xs font-semibold transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="flex-1 py-2.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition shadow-md"
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {reportModalOpen && (
         <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 text-center space-y-4">
