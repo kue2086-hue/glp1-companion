@@ -984,7 +984,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
           <div className="max-w-3xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="bg-slate-900 text-white p-6">
               <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest">Ritual Checklist</span>
-              <h2 className="text-2xl font-black mt-1">Weekly Shot Day Log</h2>
+              <h2 className="text-2xl font-black mt-1">{editingEntryWeek !== null ? 'Edit Entry' : 'Weekly Shot Day Log'}</h2>
               <p className="text-slate-400 text-xs mt-1">Track your progress, dosage details, physical metrics, and emotional state below.</p>
             </div>
 
@@ -1262,7 +1262,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                   type="submit"
                   className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-md transition"
                 >
-                  Confirm & Commit Week {entries.length + 1} Log
+                  {editingEntryWeek !== null ? 'Save Changes' : `Confirm & Commit Week ${entries.length + 1} Log`}
                 </button>
               </div>
             </form>
