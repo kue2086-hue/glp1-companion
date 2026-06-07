@@ -158,9 +158,13 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   const [mockPhotoUploaded, setMockPhotoUploaded] = useState(false);
   const [editingEntryWeek, setEditingEntryWeek] = useState(null);
 
-  
   const [reportStartDate, setReportStartDate] = useState('');
   const [reportEndDate, setReportEndDate] = useState('');
+  const [showWeightSection, setShowWeightSection] = useState(true);
+  const [showBPSection, setShowBPSection] = useState(true);
+  const [showHeartRateSection, setShowHeartRateSection] = useState(true);
+  const [showDiarySection, setShowDiarySection] = useState(true);
+  const [showSideEffectsSection, setShowSideEffectsSection] = useState(true);
   const [useAiTranslation, setUseAiTranslation] = useState(true);
   const [reportModalOpen, setReportModalOpen] = useState(false);
   const [showToast, setShowToast] = useState(true);
@@ -317,7 +321,6 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
 
     const updated = [...entries, newEntry];
     setEntries(updated);
-    setSelectedWeeksForReport([...selectedWeeksForReport, newEntry.week]);
     setActiveTab('history');
   };
 
@@ -347,13 +350,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
     setEntries(entries.filter(e => e.week !== weekNum));
   }
 };
-  const handleToggleReportWeek = (weekNum) => {
-    if (selectedWeeksForReport.includes(weekNum)) {
-      setSelectedWeeksForReport(selectedWeeksForReport.filter(w => w !== weekNum));
-    } else {
-      setSelectedWeeksForReport([...selectedWeeksForReport, weekNum]);
-    }
-  };
+    
 
   const getBPCategoryColor = (color) => {
     if (color === 'green') return 'bg-emerald-100 text-emerald-800 border-emerald-300';
@@ -1422,6 +1419,28 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                 </div>
               </div>
 
+              <div className="space-y-3">
+                <span className="block text-xs font-bold text-slate-400 uppercase">Report Sections</span>
+                <div className="space-y-2">
+                  {[
+                    { label: 'Weight', state: showWeightSection, setter: setShowWeightSection },
+                    { label: 'Blood Pressure', state: showBPSection, setter: setShowBPSection },
+                    { label: 'Heart Rate', state: showHeartRateSection, setter: setShowHeartRateSection },
+                    { label: 'Diary / Notes', state: showDiarySection, setter: setShowDiarySection },
+                    { label: 'Side Effects', state: showSideEffectsSection, setter: setShowSideEffectsSection },
+                  ].map(({ label, state, setter }) => (
+                    <label key={label} className="flex items-center justify-between text-xs font-medium text-slate-700 cursor-pointer bg-slate-50 px-3 py-2 rounded-lg border border-slate-150">
+                      <span>{label}</span>
+                      <input
+                        type="checkbox"
+                        checked={state}
+                        onChange={() => setter(!state)}
+                        className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                      />
+                    </label>
+                  ))}
+                </div>
+              </div>
               <div className="space-y-3 pt-2">
                 <span className="block text-xs font-bold text-slate-400 uppercase">AI Translation Engine</span>
                 <div className="p-4 rounded-xl border border-emerald-100 bg-emerald-50/40 space-y-3">
@@ -1491,7 +1510,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                   </div>
                 </div>
 
-                <div className="space-y-3 font-sans">
+                <div className="space-y-3 font-sans" style={{display: showWeightSection ? 'block' : 'none'}}>
                   <h4 className="font-extrabold text-xs text-slate-400 uppercase tracking-wider">Weight Loss & Vital Trends Overview</h4>
                   <div className="p-4 border border-slate-200 rounded-lg bg-slate-50 grid grid-cols-3 gap-4 text-center">
                     <div>
@@ -1523,15 +1542,14 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                           </span>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-2 font-sans py-1.5 border-y border-dashed border-slate-150 text-slate-600 bg-slate-50/50 px-2 rounded">
-                          <span>Weight: <strong className="text-slate-800">{entry.weight} lbs</strong></span>
-                          <span>BP: <strong className="text-slate-800">{entry.systolic}/{entry.diastolic} mmHg</strong></span>
-                          <span>Side Effects: <strong className="text-slate-800">
-                            {Object.values(entry.sideEffects).reduce((a, b) => a + b, 0)} Total
-                          </strong></span>
+                       <div className="flex flex-wrap gap-3 font-sans py-1.5 border-y border-dashed border-slate-150 text-slate-600 bg-slate-50/50 px-2 rounded">
+                          {showWeightSection && <span>Weight: <strong className="text-slate-800">{entry.weight} lbs</strong></span>}
+                          {showBPSection && <span>BP: <strong className="text-slate-800">{entry.systolic}/{entry.diastolic} mmHg</strong></span>}
+                          {showHeartRateSection && entry.heartRate > 0 && <span>HR: <strong className="text-slate-800">{entry.heartRate} bpm</strong></span>}
+                          {showSideEffectsSection && <span>Side Effects: <strong className="text-slate-800">{Object.values(entry.sideEffects).reduce((a, b) => a + b, 0)} Total</strong></span>}
                         </div>
 
-                        <div className="pl-3 border-l-2 border-slate-300">
+                        <div className="pl-3 border-l-2 border-slate-300" style={{display: showDiarySection ? 'block' : 'none'}}>
                           {useAiTranslation ? (
                             <div>
                               <span className="text-[9px] font-bold text-emerald-700 block uppercase tracking-widest font-sans">AI Professional Translation</span>
