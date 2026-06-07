@@ -156,6 +156,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   const [logJournalTitle, setLogJournalTitle] = useState('');
   const [logJournalText, setLogJournalText] = useState('');
   const [mockPhotoUploaded, setMockPhotoUploaded] = useState(false);
+  const [editingEntryWeek, setEditingEntryWeek] = useState(null);
 
   const [selectedWeeksForReport, setSelectedWeeksForReport] = useState([1, 2, 3]);
   const [useAiTranslation, setUseAiTranslation] = useState(true);
@@ -270,6 +271,30 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
       setHasCelebratedGoal(false);
     }
 
+    if (editingEntryWeek !== null) {
+      setEntries(entries.map(entry =>
+        entry.week === editingEntryWeek
+          ? {
+              ...entry,
+              date: logDate,
+              weight: newWeight,
+              systolic: parseInt(logSystolic) || 0,
+              diastolic: parseInt(logDiastolic) || 0,
+              heartRate: parseInt(logHeartRate) || 0,
+              site: logSite,
+              siteCustom: logSite === 'Other' ? logSiteCustom : '',
+              sideEffects: { ...logSideEffects },
+              journalTitle: logJournalTitle || 'Weekly Log',
+              journalText: logJournalText,
+              aiTranslatedText: genericAiSummary,
+              photo: mockPhotoUploaded ? 'https://images.unsplash.com/photo-1518152006812-edab29b069ac?w=150&auto=format&fit=crop&q=60' : null
+            }
+          : entry
+      ));
+      setEditingEntryWeek(null);
+      setActiveTab('history');
+      return;
+    }
     const newEntry = {
       week: entries.length + 1,
       date: logDate,
@@ -294,6 +319,27 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
     setActiveTab('history');
   };
 
+  const startEditEntry = (entry) => {
+  setLogDate(entry.date);
+  setLogWeight(String(entry.weight));
+  setLogSystolic(entry.systolic ? String(entry.systolic) : '');
+  setLogDiastolic(entry.diastolic ? String(entry.diastolic) : '');
+  setLogHeartRate(entry.heartRate ? String(entry.heartRate) : '');
+  setLogSite(entry.site || 'Left Thigh');
+  setLogSiteCustom(entry.siteCustom || '');
+  setLogSideEffects({
+    nausea: entry.sideEffects?.nausea || 0,
+    fatigue: entry.sideEffects?.fatigue || 0,
+    headache: entry.sideEffects?.headache || 0,
+    reflux: entry.sideEffects?.reflux || 0,
+    constipation: entry.sideEffects?.constipation || 0
+  });
+  setLogJournalTitle(entry.journalTitle || '');
+  setLogJournalText(entry.journalText || '');
+  setMockPhotoUploaded(!!entry.photo);
+  setEditingEntryWeek(entry.week);
+  setActiveTab('log');
+};
   const handleDeleteEntry = (weekNum) => {
   if (window.confirm('Delete this entry? This cannot be undone.')) {
     setEntries(entries.filter(e => e.week !== weekNum));
@@ -1273,6 +1319,12 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                           🩺 {entry.systolic}/{entry.diastolic} mmHg
                         </span>
                         )}
+                        <button
+                          onClick={() => startEditEntry(entry)}
+                          className="text-emerald-600 hover:text-white hover:bg-emerald-600 border border-emerald-200 text-xs font-bold px-2.5 py-1 rounded-lg transition duration-150"
+                        >
+                          ✏️ Edit
+                        </button>
                         <button
                           onClick={() => handleDeleteEntry(entry.week)}
                           className="text-rose-500 hover:text-white hover:bg-rose-500 border border-rose-200 text-xs font-bold px-2.5 py-1 rounded-lg transition duration-150"
