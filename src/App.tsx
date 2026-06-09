@@ -414,6 +414,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
     supabase
       .from('entries')
       .insert({
+        user_id: session?.user?.id,
         week: newEntry.week,
         date: newEntry.date,
         medication: newEntry.medication,
