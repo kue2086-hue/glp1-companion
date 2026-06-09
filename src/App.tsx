@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { supabase } from './supabaseClient';
 
 const MEDICATIONS = [
   { id: 'semaglutide-wegovy', name: 'Semaglutide (Wegovy)', category: 'weight-loss', doses: ['0.25mg', '0.5mg', '1.0mg', '1.7mg', '2.4mg'] },
@@ -180,6 +181,15 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   useEffect(() => {
     localStorage.setItem('glp1_entries', JSON.stringify(entries));
   }, [entries]);
+
+  useEffect(() => {
+    supabase
+      .from('entries')
+      .select('*')
+      .then((result) => {
+        console.log('Supabase connection test:', result);
+      });
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('glp1_weightGoal', JSON.stringify(weightGoal));
