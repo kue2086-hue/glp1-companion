@@ -182,14 +182,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
     localStorage.setItem('glp1_entries', JSON.stringify(entries));
   }, [entries]);
 
-  useEffect(() => {
-    supabase
-      .from('entries')
-      .select('*')
-      .then((result) => {
-        console.log('Supabase connection test:', result);
-      });
-  }, []);
+  
 
   useEffect(() => {
     localStorage.setItem('glp1_weightGoal', JSON.stringify(weightGoal));
