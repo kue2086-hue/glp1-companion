@@ -347,6 +347,28 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
     };
 
     const updated = [...entries, newEntry];
+    supabase
+      .from('entries')
+      .insert({
+        week: newEntry.week,
+        date: newEntry.date,
+        medication: newEntry.medication,
+        dose: newEntry.dose,
+        weight: newEntry.weight,
+        systolic: newEntry.systolic,
+        diastolic: newEntry.diastolic,
+        heart_rate: newEntry.heartRate,
+        site: newEntry.site,
+        site_custom: newEntry.siteCustom,
+        side_effects: newEntry.sideEffects,
+        journal_title: newEntry.journalTitle,
+        journal_text: newEntry.journalText,
+        ai_translated_text: newEntry.aiTranslatedText,
+        photo: newEntry.photo
+      })
+      .then((result) => {
+        console.log('Cloud save result:', result);
+      });
     setEntries(updated);
     setActiveTab('history');
   };
