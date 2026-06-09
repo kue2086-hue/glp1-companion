@@ -113,8 +113,79 @@ const INITIAL_ENTRIES = [
   }
 ];
 
-export default function App() {
+// --- Login screen ---
+function AuthScreen() {
+  const [authMode, setAuthMode] = useState('signin');
+  const [authEmail, setAuthEmail] = useState('');
+  const [authPassword, setAuthPassword] = useState('');
+  const [authError, setAuthError] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
+
+  const handleAuth = async () => {
+    setAuthError('');
+    setAuthLoading(true);
+    if (authMode === 'signup') {
+      const { error } = await supabase.auth.signUp({ email: authEmail, password: authPassword });
+      if (error) setAuthError(error.message);
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({ email: authEmail, password: authPassword });
+      if (error) setAuthError(error.message);
+    }
+    setAuthLoading(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-xl max-w-sm w-full p-8 space-y-6">
+        <div className="text-center space-y-2">
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto text-white font-black text-2xl shadow-md" style={{ background: 'linear-gradient(135deg, #059669, #0d9488)' }}>G</div>
+          <h1 className="text-xl font-bold text-slate-900">GLP-1 Companion</h1>
+          <p className="text-sm text-slate-500">{authMode === 'signup' ? 'Create your secure account' : 'Sign in to your account'}</p>
+        </div>
+
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label>
+            <input type="email" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} placeholder="you@example.com" className="bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5" />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Password</label>
+            <input type="password" value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} placeholder="••••••••" className="bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5" />
+          </div>
+        </div>
+
+        {authError && <p className="text-xs text-rose-600 bg-rose-50 border border-rose-200 rounded-lg p-3">{authError}</p>}
+
+        <button onClick={handleAuth} disabled={authLoading} className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm shadow-md transition disabled:opacity-60">
+          {authLoading ? 'Please wait…' : authMode === 'signup' ? 'Create Account' : 'Sign In'}
+        </button>
+
+        <p className="text-center text-xs text-slate-500">
+          {authMode === 'signup' ? 'Already have an account?' : "Don't have an account yet?"}{' '}
+          <button onClick={() => { setAuthMode(authMode === 'signup' ? 'signin' : 'signup'); setAuthError(''); }} className="text-emerald-600 font-bold hover:underline">
+            {authMode === 'signup' ? 'Sign in' : 'Create one'}
+          </button>
+        </p>
+      </div>
+    </div>
+  );
+}export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [session, setSession] = useState(null);
+  const [authChecked, setAuthChecked] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setAuthChecked(true);
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      setSession(newSession);
+    });
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
   const [entries, setEntries] = useState(() => {
     const saved = localStorage.getItem('glp1_entries');
     return saved ? JSON.parse(saved) : INITIAL_ENTRIES;
@@ -403,6 +474,8 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
     return 'bg-rose-100 text-rose-800 border-rose-300';
   };
 
+  if (!authChecked) return null;
+  if (!session) return <AuthScreen />;
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans relative overflow-x-hidden">
       
