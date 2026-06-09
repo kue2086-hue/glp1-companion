@@ -1712,6 +1712,24 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
             <div className="p-6 md:p-8 space-y-8">
               <div className="space-y-4">
                 <div className="flex items-center space-x-2 pb-2 border-b border-slate-100">
+                  <span className="text-xl">🔑</span>
+                  <h3 className="font-bold text-slate-900">Account</h3>
+                </div>
+                <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200">
+                  <div>
+                    <h4 className="text-sm font-bold text-slate-800">Signed in</h4>
+                    <p className="text-xs text-slate-500 mt-0.5 break-all">{session?.user?.email}</p>
+                  </div>
+                  <button
+                    onClick={() => supabase.auth.signOut()}
+                    className="px-4 py-2 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-semibold text-slate-700 transition shrink-0"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2 pb-2 border-b border-slate-100">
                   <span className="text-xl">👤</span>
                   <h3 className="font-bold text-slate-900">Profile Settings</h3>
                 </div>
