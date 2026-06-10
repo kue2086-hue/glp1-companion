@@ -120,6 +120,7 @@ function AuthScreen() {
   const [authPassword, setAuthPassword] = useState('');
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
+  const [authMessage, setAuthMessage] = useState('');
 
   const handleAuth = async () => {
     setAuthError('');
@@ -131,6 +132,19 @@ function AuthScreen() {
       const { error } = await supabase.auth.signInWithPassword({ email: authEmail, password: authPassword });
       if (error) setAuthError(error.message);
     }
+    setAuthLoading(false);
+  };
+
+  const handleForgotPassword = async () => {
+    setAuthError('');
+    setAuthMessage('');
+    if (!authEmail) { setAuthError('Enter your email address above first.'); return; }
+    setAuthLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(authEmail, {
+      redirectTo: 'https://glp1-companion-flame.vercel.app'
+    });
+    if (error) { setAuthError(error.message); }
+    else { setAuthMessage('Check your email for a password reset link.'); }
     setAuthLoading(false);
   };
 
@@ -155,10 +169,17 @@ function AuthScreen() {
         </div>
 
         {authError && <p className="text-xs text-rose-600 bg-rose-50 border border-rose-200 rounded-lg p-3">{authError}</p>}
+        {authMessage && <p className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg p-3">{authMessage}</p>}
 
         <button onClick={handleAuth} disabled={authLoading} className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm shadow-md transition disabled:opacity-60">
           {authLoading ? 'Please wait…' : authMode === 'signup' ? 'Create Account' : 'Sign In'}
         </button>
+
+        {authMode === 'signin' && (
+          <button onClick={handleForgotPassword} disabled={authLoading} className="w-full text-center text-xs text-emerald-600 font-bold hover:underline disabled:opacity-60">
+            Forgot password?
+          </button>
+        )}
 
         <p className="text-center text-xs text-slate-500">
           {authMode === 'signup' ? 'Already have an account?' : "Don't have an account yet?"}{' '}
@@ -169,10 +190,60 @@ function AuthScreen() {
       </div>
     </div>
   );
-}export default function App() {
+}
+
+function SetNewPasswordScreen({ onDone }) {
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [pwError, setPwError] = useState('');
+  const [pwLoading, setPwLoading] = useState(false);
+
+  const handleSetPassword = async () => {
+    setPwError('');
+    if (newPassword.length < 6) { setPwError('Password must be at least 6 characters.'); return; }
+    if (newPassword !== confirmPassword) { setPwError('Passwords do not match.'); return; }
+    setPwLoading(true);
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    setPwLoading(false);
+    if (error) { setPwError(error.message); return; }
+    onDone();
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-xl max-w-sm w-full p-8 space-y-6">
+        <div className="text-center space-y-2">
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto text-white font-black text-2xl shadow-md" style={{ background: 'linear-gradient(135deg, #059669, #0d9488)' }}>G</div>
+          <h1 className="text-xl font-bold text-slate-900">Set a New Password</h1>
+          <p className="text-sm text-slate-500">Enter and confirm your new password below.</p>
+        </div>
+
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">New Password</label>
+            <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="••••••••" className="bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5" />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Confirm Password</label>
+            <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" className="bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5" />
+          </div>
+        </div>
+
+        {pwError && <p className="text-xs text-rose-600 bg-rose-50 border border-rose-200 rounded-lg p-3">{pwError}</p>}
+
+        <button onClick={handleSetPassword} disabled={pwLoading} className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm shadow-md transition disabled:opacity-60">
+          {pwLoading ? 'Please wait…' : 'Update Password'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [session, setSession] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
+  const [recoveryMode, setRecoveryMode] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -181,6 +252,9 @@ function AuthScreen() {
     });
     const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
       setSession(newSession);
+      if (_event === 'PASSWORD_RECOVERY') {
+        setRecoveryMode(true);
+      }
     });
     return () => {
       listener.subscription.unsubscribe();
@@ -531,6 +605,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   };
 
   if (!authChecked) return null;
+  if (recoveryMode) return <SetNewPasswordScreen onDone={() => setRecoveryMode(false)} />;
   if (!session) return <AuthScreen />;
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans relative overflow-x-hidden">
