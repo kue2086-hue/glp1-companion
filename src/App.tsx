@@ -666,7 +666,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
           <div className="bg-gradient-to-br from-indigo-50/95 to-white border border-indigo-100 shadow-2xl rounded-3xl max-w-md w-full p-8 text-center space-y-6 mx-4 transform animate-float-burst relative">
             <span className="text-6xl block animate-pulse-burst">🎂</span>
             <div className="space-y-2">
-              <span className="text-[11px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full uppercase tracking-wider">Happy Birthday Sarah!</span>
+              <span className="text-[11px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full uppercase tracking-wider">Happy Birthday Keith!</span>
               <h3 className="text-3xl font-black text-slate-950 tracking-tight">HAPPY BIRTHDAY!</h3>
               <p className="text-sm text-slate-500 leading-relaxed">
                 The GLP-1 Companion Team wishes you an amazing day of health, strength, and milestone progression! Keep up the incredible work.
@@ -799,7 +799,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
             <span>
-              <strong>Local-First Storage Active:</strong> Your data is saved strictly to this browser session. Zero cloud security risks, 100% HIPAA-proof privacy.
+              <strong>Cloud Sync Active:</strong> Your data is securely saved to your private account and synced across your devices.
             </span>
           </div>
           <button onClick={() => setShowToast(false)} className="hover:text-emerald-200 transition">
@@ -1408,7 +1408,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                   </div>
                   <div className="flex-1 text-center sm:text-left">
                     <p className="font-bold text-xs text-slate-700">Simulate Progress Image Capture</p>
-                    <p className="text-[11px] text-slate-500 mt-0.5">Will be securely retained locally within browser sandboxed memory.</p>
+                    <p className="text-[11px] text-slate-500 mt-0.5">Saved securely with your entry.</p>
                     <button
                       type="button"
                       onClick={() => setMockPhotoUploaded(!mockPhotoUploaded)}
@@ -1659,7 +1659,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                 <div className="border-b-4 border-slate-900 pb-4 flex justify-between items-end">
                   <div>
                     <h2 className="text-2xl font-extrabold text-slate-950 tracking-tight font-sans">GLP-1 THERAPEUTIC MONITORING REPORT</h2>
-                    <p className="text-[11px] text-slate-500 uppercase tracking-widest font-sans font-bold">Secure Local Patient-Generated Health Record</p>
+                    <p className="text-[11px] text-slate-500 uppercase tracking-widest font-sans font-bold">Patient-Generated Health Record</p>
                   </div>
                   <div className="text-right text-[11px] font-sans text-slate-400">
                     <span>Generated: {new Date().toLocaleDateString()}</span>
@@ -1669,7 +1669,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs font-sans pb-4 border-b border-slate-200">
                   <div>
                     <span className="text-slate-400 font-semibold uppercase block">Patient</span>
-                    <strong className="text-slate-800 text-sm">Sarah J.</strong>
+                    <strong className="text-slate-800 text-sm">Keith</strong>
                   </div>
                   <div>
                     <span className="text-slate-400 font-semibold uppercase block">Current Therapy</span>
@@ -1910,12 +1910,12 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
               <div className="space-y-4">
                 <div className="flex items-center space-x-2 pb-2 border-b border-slate-100">
                   <span className="text-xl">🔒</span>
-                  <h3 className="font-bold text-slate-900">Device Sandboxed Privacy</h3>
+                  <h3 className="font-bold text-slate-900">Your Data & Privacy</h3>
                 </div>
 
                 <div className="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100/60 text-xs text-slate-600 leading-relaxed space-y-2">
                   <p>
-                    <strong>HIPAA-Proof Sandboxing:</strong> This application has no central network database. Your blood pressure, medication lists, target metrics, and progress logs are saved exclusively within your immediate browser sandbox memory.
+                    <strong>Private Cloud Sync:</strong> Your blood pressure, medication lists, target metrics, and progress logs are saved to your private account and synced securely across your devices. Only you can access them when signed in.
                   </p>
                   <p className="text-[11px] text-emerald-800 font-semibold italic">
                     Always maintain screen lock passcodes on this hardware device to preserve privacy.
@@ -1985,7 +1985,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
             
             <h3 className="text-xl font-black text-slate-950">PDF Generation Simulated!</h3>
             <p className="text-xs text-slate-500 leading-relaxed">
-              Your customized clinical PDF has been compiled using localized browser sandbox storage. Because this app values your health privacy, no data was transmitted over insecure networks.
+              Your customized clinical PDF has been generated on your device, ready to print or save. Your health data stays in your private account.
             </p>
 
             <div className="bg-slate-50 rounded-xl border border-slate-150 p-4 text-left space-y-1.5 text-xs text-slate-600">
@@ -2016,7 +2016,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
       )}
 
       <footer className="bg-white border-t border-slate-200 py-6 text-center text-slate-400 text-xs mt-auto">
-        <p>&copy; 2026 GLP-1 Companion &bull; Safe, Local, Private &bull; HIPAA Compliant local Sandbox</p>
+        <p>&copy; 2026 GLP-1 Companion &bull; Private &bull; Synced securely to your account</p>
       </footer>
     </div>
   );
