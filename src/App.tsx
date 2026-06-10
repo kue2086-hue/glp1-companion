@@ -135,6 +135,16 @@ function AuthScreen() {
     setAuthLoading(false);
   };
 
+  const handleGoogleSignIn = async () => {
+    setAuthError('');
+    setAuthLoading(true);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: 'https://glp1-companion-flame.vercel.app' }
+    });
+    if (error) { setAuthError(error.message); setAuthLoading(false); }
+  };
+
   const handleForgotPassword = async () => {
     setAuthError('');
     setAuthMessage('');
@@ -173,6 +183,17 @@ function AuthScreen() {
 
         <button onClick={handleAuth} disabled={authLoading} className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm shadow-md transition disabled:opacity-60">
           {authLoading ? 'Please wait…' : authMode === 'signup' ? 'Create Account' : 'Sign In'}
+        </button>
+
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-px bg-slate-200"></div>
+          <span className="text-[10px] font-bold text-slate-400 uppercase">or</span>
+          <div className="flex-1 h-px bg-slate-200"></div>
+        </div>
+
+        <button onClick={handleGoogleSignIn} disabled={authLoading} className="w-full py-3 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl font-bold text-sm shadow-sm transition disabled:opacity-60 flex items-center justify-center gap-2">
+          <span className="text-base font-black" style={{ color: '#4285F4' }}>G</span>
+          <span>Sign in with Google</span>
         </button>
 
         {authMode === 'signin' && (
