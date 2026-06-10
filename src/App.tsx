@@ -186,10 +186,7 @@ function AuthScreen() {
       listener.subscription.unsubscribe();
     };
   }, []);
-  const [entries, setEntries] = useState(() => {
-    const saved = localStorage.getItem('glp1_entries');
-    return saved ? JSON.parse(saved) : INITIAL_ENTRIES;
-  });
+  const [entries, setEntries] = useState([]);
   
   const [themeMode, setThemeMode] = useState('device'); 
   const [resolvedDark, setResolvedDark] = useState(false);
@@ -279,7 +276,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
           aiTranslatedText: row.ai_translated_text,
           photo: row.photo,
         }));
-        console.log('CLOUD ENTRIES (translated):', fromCloud);
+        setEntries(fromCloud);
       });
   }, [session]);
 
