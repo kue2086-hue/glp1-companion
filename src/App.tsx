@@ -252,6 +252,36 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   useEffect(() => {
     localStorage.setItem('glp1_entries', JSON.stringify(entries));
   }, [entries]);
+  // TEMP: read entries from cloud and print them (no screen change yet)
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    supabase
+      .from('entries')
+      .select('*')
+      .order('date', { ascending: true })
+      .then(({ data, error }) => {
+        if (error) { console.log('Cloud read error:', error); return; }
+        const fromCloud = (data || []).map((row) => ({
+          id: row.id,
+          week: row.week,
+          date: row.date,
+          medication: row.medication,
+          dose: row.dose,
+          weight: row.weight,
+          systolic: row.systolic,
+          diastolic: row.diastolic,
+          heartRate: row.heart_rate,
+          site: row.site,
+          siteCustom: row.site_custom,
+          sideEffects: row.side_effects,
+          journalTitle: row.journal_title,
+          journalText: row.journal_text,
+          aiTranslatedText: row.ai_translated_text,
+          photo: row.photo,
+        }));
+        console.log('CLOUD ENTRIES (translated):', fromCloud);
+      });
+  }, [session]);
 
   
 
