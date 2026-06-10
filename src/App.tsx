@@ -458,8 +458,11 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
         ai_translated_text: newEntry.aiTranslatedText,
         photo: newEntry.photo
       })
+      .select()
       .then((result) => {
         console.log('Cloud save result:', result);
+        const savedId = result.data && result.data[0] ? result.data[0].id : null;
+        setEntries([...entries, { ...newEntry, id: savedId }]);
       });
     setEntries(updated);
     setActiveTab('history');
