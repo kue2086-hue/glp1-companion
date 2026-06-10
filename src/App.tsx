@@ -494,6 +494,12 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   };
 
   const confirmDelete = () => {
+    const target = entries.find(e => e.week === pendingDeleteWeek);
+    if (target && target.id) {
+      supabase.from('entries').delete().eq('id', target.id).then((result) => {
+        console.log('Cloud delete result:', result);
+      });
+    }
     setEntries(entries.filter(e => e.week !== pendingDeleteWeek));
     setPendingDeleteWeek(null);
   };
