@@ -415,6 +415,25 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
             }
           : entry
       ));
+      const editTarget = entries.find(e => e.week === editingEntryWeek);
+      if (editTarget && editTarget.id) {
+        supabase.from('entries').update({
+          date: logDate,
+          weight: newWeight,
+          systolic: parseInt(logSystolic) || 0,
+          diastolic: parseInt(logDiastolic) || 0,
+          heart_rate: parseInt(logHeartRate) || 0,
+          site: logSite,
+          site_custom: logSite === 'Other' ? logSiteCustom : '',
+          side_effects: { ...logSideEffects },
+          journal_title: logJournalTitle || 'Weekly Log',
+          journal_text: logJournalText,
+          ai_translated_text: genericAiSummary,
+          photo: mockPhotoUploaded ? 'https://images.unsplash.com/photo-1518152006812-edab29b069ac?w=150&auto=format&fit=crop&q=60' : null
+        }).eq('id', editTarget.id).then((result) => {
+          console.log('Cloud update result:', result);
+        });
+      }
       setEditingEntryWeek(null);
       setActiveTab('history');
       return;
