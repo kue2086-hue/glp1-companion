@@ -1000,6 +1000,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                 <p className="text-[10px] text-slate-400 mt-2">{(() => { const last = sortedByDate.find(e => e.systolic > 0 && e.diastolic > 0); if (!last || !last.date) return ''; const [y, m, d] = last.date.split('-'); return `Recorded ${m}-${d}-${y}`; })()}</p>
                 <p className="text-[10px] text-slate-400 mt-3">AHA ranges tracked locally.</p>
               </div>
+              </div>
 
               
 
@@ -1151,7 +1152,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
             </div>
           </div>
         
-</div>
+
         )}
         {activeTab === 'log' && (
           <div className="max-w-3xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
