@@ -619,6 +619,17 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   };
     
 
+  const handleDownloadData = () => {
+    const dataStr = JSON.stringify(entries, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `glp1-companion-backup-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   const getBPCategoryColor = (color) => {
     if (color === 'green') return 'bg-emerald-100 text-emerald-800 border-emerald-300';
     if (color === 'yellow') return 'bg-amber-500 text-white border-amber-600 font-bold';
@@ -2018,7 +2029,13 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                   </p>
                 </div>
 
-                <div className="pt-4 flex justify-end">
+                <div className="pt-4 flex flex-col sm:flex-row justify-end gap-2">
+                  <button
+                    onClick={handleDownloadData}
+                    className="px-4 py-2 border border-emerald-200 hover:bg-emerald-50 text-emerald-700 rounded-xl text-xs font-semibold transition"
+                  >
+                    ⬇️ Download My Data (Backup)
+                  </button>
                   <button
                     onClick={() => {
                       if(window.confirm('Do you really wish to reset all logs back to week 1 default settings? This cannot be undone.')) {
