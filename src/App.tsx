@@ -62,56 +62,7 @@ const evaluateBP = (systolic, diastolic) => {
   return { category: 'Unusual', color: 'yellow', description: 'Please double-check your readings.' };
 };
 
-const INITIAL_ENTRIES = [
-  {
-    week: 1,
-    date: '2026-05-14',
-    medication: 'Semaglutide (Wegovy)',
-    dose: '0.25mg',
-    weight: 224.5,
-    systolic: 118,
-    diastolic: 78,
-    site: 'Right Abdomen',
-    siteCustom: '',
-    sideEffects: { nausea: 1, fatigue: 2, headache: 0, reflux: 0, constipation: 0 },
-    journalTitle: 'First week nerves!',
-    journalText: 'Took my very first dose tonight. Was terrified of the needle but honestly barely felt it. Feeling hopeful but keeping expectations in check.',
-    aiTranslatedText: 'Dose 1 initiated. Patient successfully navigated initial mild procedural anxiety regarding self-injection. Minimal post-injection side effects recorded.',
-    photo: 'https://images.unsplash.com/photo-1518152006812-edab29b069ac?w=150&auto=format&fit=crop&q=60'
-  },
-  {
-    week: 2,
-    date: '2026-05-21',
-    medication: 'Semaglutide (Wegovy)',
-    dose: '0.25mg',
-    weight: 221.2,
-    systolic: 121,
-    diastolic: 81,
-    site: 'Left Abdomen',
-    siteCustom: '',
-    sideEffects: { nausea: 3, fatigue: 2, headache: 1, reflux: 0, constipation: 0 },
-    journalTitle: 'Feeling the nausea',
-    journalText: 'Experienced quite a bit of nausea on Day 2 and Day 3. Didn’t want to look at fried chicken at all, which is weirdly a huge win! Drank a lot of electrolyte water.',
-    aiTranslatedText: 'Dose 2 completed. Notable decrease in dietary cravings alongside transient moderate nausea (Grade 3/5) on post-injection days 2-3. Satiety levels significantly elevated.',
-    photo: 'https://images.unsplash.com/photo-1518152006812-edab29b069ac?w=150&auto=format&fit=crop&q=60'
-  },
-  {
-    week: 3,
-    date: '2026-05-28',
-    medication: 'Semaglutide (Wegovy)',
-    dose: '0.25mg',
-    weight: 219.0,
-    systolic: 119,
-    diastolic: 79,
-    site: 'Right Thigh',
-    siteCustom: '',
-    sideEffects: { nausea: 1, fatigue: 3, headache: 0, reflux: 1, constipation: 0 },
-    journalTitle: 'Switched site to thigh',
-    journalText: 'Switched the injection site to my thigh this week to see if it helps with stomach issues. Nausea was much lower, although I felt really wiped out on Friday.',
-    aiTranslatedText: 'Dose 3 administered. Injection site rotated to thigh resulting in a clinical reduction of gastrointestinal adverse effects (minimal nausea). Mild persistent fatigue noted.',
-    photo: 'https://images.unsplash.com/photo-1518152006812-edab29b069ac?w=150&auto=format&fit=crop&q=60'
-  }
-];
+
 
 // --- Login screen ---
 function AuthScreen() {
@@ -331,6 +282,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   const [importLoading, setImportLoading] = useState(false);
   const [importError, setImportError] = useState('');
   const [importSuccess, setImportSuccess] = useState('');
+  const [restoreConfirmText, setRestoreConfirmText] = useState('');
 
   const [reportStartDate, setReportStartDate] = useState('');
   const [reportEndDate, setReportEndDate] = useState('');
@@ -353,7 +305,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   useEffect(() => {
     localStorage.setItem('glp1_entries', JSON.stringify(entries));
   }, [entries]);
-  // TEMP: read entries from cloud and print them (no screen change yet)
+  // Load this user's entries from the cloud on sign-in
   useEffect(() => {
     if (!session?.user?.id) return;
     supabase
@@ -748,8 +700,9 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
 
     setEntries(fromCloud);
     localStorage.setItem('glp1_entries', JSON.stringify(fromCloud));
-    setImportSuccess('Imported ' + fromCloud.length + ' entries into your account.');
+    setImportSuccess('Restored ' + fromCloud.length + ' entries into your account.');
     setImportText('');
+    setRestoreConfirmText('');
     setImportLoading(false);
   };
 
@@ -1641,7 +1594,7 @@ onClick={() => {
                   <div>
                     <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Open Logging Space (Feelings, Appetite, Food Noise)</label>
                     <textarea
-                      rows="4"
+                      rows={4}
                       placeholder="Write freely here. Record symptoms, emotional state, food noise level, digestion patterns, or lifestyle adaptations."
                       value={logJournalText}
                       onChange={(e) => setLogJournalText(e.target.value)}
@@ -2206,32 +2159,42 @@ onClick={() => {
                 </div>
               </div>
 
-              {/* Day One Import (one-time) */}
+              {/* Restore from Backup */}
               <div className="space-y-4">
                 <div className="flex items-center space-x-2 pb-2 border-b border-slate-100">
                   <span className="text-xl">📥</span>
-                  <h3 className="font-bold text-slate-900">Import Day One Journal</h3>
+                  <h3 className="font-bold text-slate-900">Restore from Backup</h3>
                 </div>
 
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    Paste your prepared journal data below and tap Import. This <strong>replaces</strong> all current entries in your account with the imported ones.
+                    Paste the contents of a backup file you saved with the <strong>Download My Data</strong> button above. This <strong>replaces</strong> all current entries in your account with the ones from your backup, and cannot be undone.
                   </p>
                   <textarea
                     rows={4}
                     value={importText}
                     onChange={(e) => setImportText(e.target.value)}
-                    placeholder="Paste your import data here…"
+                    placeholder="Paste your backup file contents here…"
                     className="bg-white border border-slate-200 text-slate-800 text-xs rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5 font-mono"
                   />
                   {importError && <p className="text-xs text-rose-600 bg-rose-50 border border-rose-200 rounded-lg p-3">{importError}</p>}
                   {importSuccess && <p className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg p-3">{importSuccess}</p>}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-500 uppercase mb-1">Type RESTORE to confirm</label>
+                    <input
+                      type="text"
+                      value={restoreConfirmText}
+                      onChange={(e) => setRestoreConfirmText(e.target.value)}
+                      placeholder="RESTORE"
+                      className="bg-white border border-slate-200 text-slate-800 text-sm rounded-lg focus:ring-rose-500 focus:border-rose-500 block w-full p-2.5 text-center font-bold tracking-widest"
+                    />
+                  </div>
                   <button
                     onClick={handleImportJournal}
-                    disabled={importLoading}
-                    className="w-full py-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition disabled:opacity-60"
+                    disabled={importLoading || restoreConfirmText !== 'RESTORE'}
+                    className="w-full py-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition disabled:opacity-40 disabled:cursor-not-allowed"
                   >
-                    {importLoading ? 'Importing…' : 'Import & Replace Entries'}
+                    {importLoading ? 'Restoring…' : 'Restore Entries'}
                   </button>
                 </div>
               </div>
