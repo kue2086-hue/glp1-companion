@@ -322,6 +322,11 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   const [mockPhotoUploaded, setMockPhotoUploaded] = useState(false);
   const [editingEntryWeek, setEditingEntryWeek] = useState(null);
   const [pendingDeleteWeek, setPendingDeleteWeek] = useState(null);
+  const [showWipeModal, setShowWipeModal] = useState(false);
+  const [wipeIntent, setWipeIntent] = useState('settings');
+  const [wipeConfirmText, setWipeConfirmText] = useState('');
+  const [wipeLoading, setWipeLoading] = useState(false);
+  const [wipeError, setWipeError] = useState('');
 
   const [reportStartDate, setReportStartDate] = useState('');
   const [reportEndDate, setReportEndDate] = useState('');
@@ -628,6 +633,38 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
     link.download = `glp1-companion-backup-${new Date().toISOString().split('T')[0]}.json`;
     link.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleConfirmedWipe = async () => {
+    setWipeError('');
+    setWipeLoading(true);
+
+    const { error } = await supabase
+      .from('entries')
+      .delete()
+      .eq('user_id', session?.user?.id);
+
+    if (error) {
+      setWipeError('Could not delete cloud data: ' + error.message + ' — your data was NOT changed. Please try again.');
+      setWipeLoading(false);
+      return;
+    }
+
+    setEntries([]);
+    localStorage.removeItem('glp1_entries');
+
+    if (wipeIntent === 'settings') {
+      setWeightGoal(215);
+      setHasCelebratedGoal(false);
+      setHasCelebratedBirthday(false);
+      setActiveTab('dashboard');
+    } else {
+      setShowOnboarding(true);
+    }
+
+    setWipeLoading(false);
+    setShowWipeModal(false);
+    setWipeConfirmText('');
   };
 
   const getBPCategoryColor = (color) => {
@@ -2038,13 +2075,10 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                   </button>
                   <button
                     onClick={() => {
-                      if(window.confirm('Do you really wish to reset all logs back to week 1 default settings? This cannot be undone.')) {
-                        setEntries(INITIAL_ENTRIES);
-                        setWeightGoal(215);
-                        setHasCelebratedGoal(false);
-                        setHasCelebratedBirthday(false);
-                        setActiveTab('dashboard');
-                      }
+                      setWipeIntent('settings');
+                      setWipeConfirmText('');
+                      setWipeError('');
+                      setShowWipeModal(true);
                     }}
                     className="px-4 py-2 border border-rose-200 hover:bg-rose-50 text-rose-600 rounded-xl text-xs font-semibold transition"
                   >
@@ -2082,6 +2116,57 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                 className="flex-1 py-2.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition shadow-md"
               >
                 Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showWipeModal && (
+        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-sm w-full p-6 space-y-4">
+            <div className="w-16 h-16 bg-rose-100 text-rose-600 border border-rose-200 rounded-2xl flex items-center justify-center mx-auto text-3xl">
+              ⚠️
+            </div>
+
+            <h3 className="text-xl font-black text-slate-950 text-center">Permanently Delete Everything?</h3>
+            <p className="text-xs text-slate-600 leading-relaxed text-center">
+              This permanently deletes <strong>ALL</strong> your logged entries from the cloud. This cannot be undone.
+            </p>
+
+            <button
+              onClick={handleDownloadData}
+              className="w-full py-2.5 rounded-lg border border-emerald-200 hover:bg-emerald-50 text-emerald-700 text-xs font-semibold transition"
+            >
+              ⬇️ Download a backup first
+            </button>
+
+            <div>
+              <label className="block text-[11px] font-bold text-slate-500 uppercase mb-1">Type DELETE to confirm</label>
+              <input
+                type="text"
+                value={wipeConfirmText}
+                onChange={(e) => setWipeConfirmText(e.target.value)}
+                placeholder="DELETE"
+                className="bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-lg focus:ring-rose-500 focus:border-rose-500 block w-full p-2.5 text-center font-bold tracking-widest"
+              />
+            </div>
+
+            {wipeError && <p className="text-xs text-rose-600 bg-rose-50 border border-rose-200 rounded-lg p-3">{wipeError}</p>}
+
+            <div className="pt-2 flex space-x-2">
+              <button
+                onClick={() => { setShowWipeModal(false); setWipeConfirmText(''); setWipeError(''); }}
+                disabled={wipeLoading}
+                className="flex-1 py-2.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100 text-xs font-semibold transition disabled:opacity-60"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmedWipe}
+                disabled={wipeConfirmText !== 'DELETE' || wipeLoading}
+                className="flex-1 py-2.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {wipeLoading ? 'Deleting…' : 'Permanently Delete'}
               </button>
             </div>
           </div>
