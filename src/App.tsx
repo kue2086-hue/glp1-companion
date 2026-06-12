@@ -1363,9 +1363,12 @@ onClick={() => {
 
                   <div className="relative z-10 flex-1 flex items-end justify-between px-6 pt-6">
                     {entries.map((entry) => {
-                      const minWeight = 210;
-                      const maxWeight = 226;
-                      const range = maxWeight - minWeight;
+                      const chartWeights = entries.map(e => e.weight).filter(w => w > 0);
+                      const lowest = chartWeights.length ? Math.min(...chartWeights) : 210;
+                      const highest = chartWeights.length ? Math.max(...chartWeights) : 226;
+                      const minWeight = lowest - 4;
+                      const maxWeight = highest + 4;
+                      const range = (maxWeight - minWeight) || 1;
                       const percentage = ((entry.weight - minWeight) / range) * 100;
                       
                       return (
