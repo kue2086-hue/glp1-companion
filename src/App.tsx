@@ -865,7 +865,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
       </div>
 
       <button
- onClick={() => {
+onClick={() => {
               if (onboardingGoal) setWeightGoal(parseFloat(onboardingGoal) || 215);
               if (onboardingWeight) {
                 const firstEntry = {
@@ -876,13 +876,43 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
                   weight: parseFloat(onboardingWeight),
                   systolic: 0,
                   diastolic: 0,
+                  heartRate: 0,
                   site: '',
+                  siteCustom: '',
                   sideEffects: { nausea: 0, fatigue: 0, headache: 0, reflux: 0, constipation: 0 },
                   journalTitle: 'Starting Weight',
                   journalText: 'My starting point on this journey.',
+                  aiTranslatedText: '',
+                  photo: null,
                 };
                 setEntries([firstEntry]);
                 localStorage.setItem('glp1_entries', JSON.stringify([firstEntry]));
+                supabase
+                  .from('entries')
+                  .insert({
+                    user_id: session?.user?.id,
+                    week: firstEntry.week,
+                    date: firstEntry.date,
+                    medication: firstEntry.medication,
+                    dose: firstEntry.dose,
+                    weight: firstEntry.weight,
+                    systolic: firstEntry.systolic,
+                    diastolic: firstEntry.diastolic,
+                    heart_rate: firstEntry.heartRate,
+                    site: firstEntry.site,
+                    site_custom: firstEntry.siteCustom,
+                    side_effects: firstEntry.sideEffects,
+                    journal_title: firstEntry.journalTitle,
+                    journal_text: firstEntry.journalText,
+                    ai_translated_text: firstEntry.aiTranslatedText,
+                    photo: firstEntry.photo
+                  })
+                  .select()
+                  .then((result) => {
+                    console.log('Onboarding cloud save result:', result);
+                    const savedId = result.data && result.data[0] ? result.data[0].id : null;
+                    setEntries([{ ...firstEntry, id: savedId }]);
+                  });
               }
               setShowOnboarding(false);
               setActiveTab('dashboard');
