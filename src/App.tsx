@@ -327,6 +327,10 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   const [wipeConfirmText, setWipeConfirmText] = useState('');
   const [wipeLoading, setWipeLoading] = useState(false);
   const [wipeError, setWipeError] = useState('');
+  const [importText, setImportText] = useState('');
+  const [importLoading, setImportLoading] = useState(false);
+  const [importError, setImportError] = useState('');
+  const [importSuccess, setImportSuccess] = useState('');
 
   const [reportStartDate, setReportStartDate] = useState('');
   const [reportEndDate, setReportEndDate] = useState('');
@@ -665,6 +669,88 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
     setWipeLoading(false);
     setShowWipeModal(false);
     setWipeConfirmText('');
+  };
+
+  const handleImportJournal = async () => {
+    setImportError('');
+    setImportSuccess('');
+
+    let parsed;
+    try {
+      parsed = JSON.parse(importText);
+    } catch (err) {
+      setImportError('Could not read that as data. Make sure you pasted the whole block.');
+      return;
+    }
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      setImportError('That did not look like a list of entries. Nothing was imported.');
+      return;
+    }
+
+    setImportLoading(true);
+
+    const { error: delError } = await supabase
+      .from('entries')
+      .delete()
+      .eq('user_id', session?.user?.id);
+
+    if (delError) {
+      setImportError('Could not clear old cloud data: ' + delError.message + ' — nothing was imported.');
+      setImportLoading(false);
+      return;
+    }
+
+    const rows = parsed.map((entry) => ({
+      user_id: session?.user?.id,
+      week: entry.week,
+      date: entry.date,
+      medication: entry.medication,
+      dose: entry.dose,
+      weight: entry.weight,
+      systolic: entry.systolic || 0,
+      diastolic: entry.diastolic || 0,
+      heart_rate: entry.heartRate || 0,
+      site: entry.site,
+      site_custom: entry.siteCustom || '',
+      side_effects: entry.sideEffects || { nausea: 0, fatigue: 0, headache: 0, reflux: 0, constipation: 0 },
+      journal_title: entry.journalTitle || 'Weekly Log',
+      journal_text: entry.journalText || '',
+      ai_translated_text: entry.aiTranslatedText || '',
+      photo: entry.photo || null,
+    }));
+
+    const { data, error } = await supabase.from('entries').insert(rows).select();
+
+    if (error) {
+      setImportError('Import failed: ' + error.message);
+      setImportLoading(false);
+      return;
+    }
+
+    const fromCloud = (data || []).map((row) => ({
+      id: row.id,
+      week: row.week,
+      date: row.date,
+      medication: row.medication,
+      dose: row.dose,
+      weight: row.weight,
+      systolic: row.systolic,
+      diastolic: row.diastolic,
+      heartRate: row.heart_rate,
+      site: row.site,
+      siteCustom: row.site_custom,
+      sideEffects: row.side_effects,
+      journalTitle: row.journal_title,
+      journalText: row.journal_text,
+      aiTranslatedText: row.ai_translated_text,
+      photo: row.photo,
+    })).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    setEntries(fromCloud);
+    localStorage.setItem('glp1_entries', JSON.stringify(fromCloud));
+    setImportSuccess('Imported ' + fromCloud.length + ' entries into your account.');
+    setImportText('');
+    setImportLoading(false);
   };
 
   const getBPCategoryColor = (color) => {
@@ -2115,6 +2201,36 @@ onClick={() => {
                     className="px-4 py-2 border border-rose-200 hover:bg-rose-50 text-rose-600 rounded-xl text-xs font-semibold transition"
                   >
                     Reset Application State
+                  </button>
+                </div>
+              </div>
+
+              {/* Day One Import (one-time) */}
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2 pb-2 border-b border-slate-100">
+                  <span className="text-xl">📥</span>
+                  <h3 className="font-bold text-slate-900">Import Day One Journal</h3>
+                </div>
+
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Paste your prepared journal data below and tap Import. This <strong>replaces</strong> all current entries in your account with the imported ones.
+                  </p>
+                  <textarea
+                    rows={4}
+                    value={importText}
+                    onChange={(e) => setImportText(e.target.value)}
+                    placeholder="Paste your import data here…"
+                    className="bg-white border border-slate-200 text-slate-800 text-xs rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5 font-mono"
+                  />
+                  {importError && <p className="text-xs text-rose-600 bg-rose-50 border border-rose-200 rounded-lg p-3">{importError}</p>}
+                  {importSuccess && <p className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg p-3">{importSuccess}</p>}
+                  <button
+                    onClick={handleImportJournal}
+                    disabled={importLoading}
+                    className="w-full py-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition disabled:opacity-60"
+                  >
+                    {importLoading ? 'Importing…' : 'Import & Replace Entries'}
                   </button>
                 </div>
               </div>
