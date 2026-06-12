@@ -1366,10 +1366,8 @@ onClick={() => {
                       const chartWeights = entries.map(e => e.weight).filter(w => w > 0);
                       const lowest = chartWeights.length ? Math.min(...chartWeights) : 210;
                       const highest = chartWeights.length ? Math.max(...chartWeights) : 226;
-                      const minWeight = lowest - 4;
-                      const maxWeight = highest + 4;
-                      const range = (maxWeight - minWeight) || 1;
-                      const percentage = ((entry.weight - minWeight) / range) * 100;
+                      const spread = (highest - lowest) || 1;
+                      const percentage = 10 + ((entry.weight - lowest) / spread) * 50;
                       
                       return (
                         <div key={entry.week} className="flex flex-col items-center justify-end h-full flex-1 group">
