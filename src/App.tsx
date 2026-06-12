@@ -1372,7 +1372,7 @@ onClick={() => {
                       const percentage = ((entry.weight - minWeight) / range) * 100;
                       
                       return (
-                        <div key={entry.week} className="flex flex-col items-center flex-1 group">
+                        <div key={entry.week} className="flex flex-col items-center justify-end h-full flex-1 group">
                           <div className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100 mb-2 shadow-sm scale-95 group-hover:scale-105 transition duration-150">
                             {entry.weight} lbs
                           </div>
