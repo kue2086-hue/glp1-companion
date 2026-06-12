@@ -919,19 +919,21 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
               className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm shadow-md transition duration-150 transform hover:scale-[1.02]"
             >
               Start Tracking with Confidence 🚀
- {entries.length <= 3 && (<button
-  onClick={() => {
-    setEntries([]);
-    localStorage.removeItem('glp1_entries');
-    setShowWelcomeModal(false);
-    setShowOnboarding(true);
-  }}
-  className="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-sm transition duration-150 mt-2"
->
-  Start Fresh (New User Setup) 🗑️
-</button>
-)}
             </button>
+            {entries.length <= 3 && (
+              <button
+                onClick={() => {
+                  setShowWelcomeModal(false);
+                  setWipeIntent('fresh');
+                  setWipeConfirmText('');
+                  setWipeError('');
+                  setShowWipeModal(true);
+                }}
+                className="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-sm transition duration-150 mt-2"
+              >
+                Start Fresh (New User Setup) 🗑️
+              </button>
+            )}
           </div>
         </div>
       )}
