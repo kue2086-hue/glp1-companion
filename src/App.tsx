@@ -211,7 +211,7 @@ function SetNewPasswordScreen({ onDone }) {
   );
 }
 
-function EntryPhoto({ path }) {
+function EntryPhoto({ path, className = "w-full h-full object-cover" }) {
   const [url, setUrl] = useState(null);
   useEffect(() => {
     let active = true;
@@ -226,7 +226,7 @@ function EntryPhoto({ path }) {
   if (!url) {
     return <div className="w-full h-full flex items-center justify-center bg-slate-100 text-[10px] text-slate-400">…</div>;
   }
-  return <img src={url} alt="Progress" className="w-full h-full object-cover" />;
+  return <img src={url} alt="Progress" className={className} />;
 }
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -1804,8 +1804,8 @@ onClick={() => {
                         {entry.photo && (
                           <div>
                             <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Weekly Progress Photo</h5>
-                            <div className="w-full h-24 rounded-lg overflow-hidden border border-slate-200">
-                              <EntryPhoto path={entry.photo} />
+                            <div className="rounded-lg overflow-hidden border border-slate-200">
+                              <EntryPhoto path={entry.photo} className="w-full h-auto" />
                             </div>
                           </div>
                         )}
