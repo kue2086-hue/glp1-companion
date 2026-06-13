@@ -211,6 +211,23 @@ function SetNewPasswordScreen({ onDone }) {
   );
 }
 
+function EntryPhoto({ path }) {
+  const [url, setUrl] = useState(null);
+  useEffect(() => {
+    let active = true;
+    if (!path) { setUrl(null); return; }
+    supabase.storage
+      .from('progress-photos')
+      .createSignedUrl(path, 3600)
+      .then(({ data }) => { if (active && data) setUrl(data.signedUrl); });
+    return () => { active = false; };
+  }, [path]);
+  if (!path) return null;
+  if (!url) {
+    return <div className="w-full h-full flex items-center justify-center bg-slate-100 text-[10px] text-slate-400">…</div>;
+  }
+  return <img src={url} alt="Progress" className="w-full h-full object-cover" />;
+}
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [session, setSession] = useState(null);
@@ -270,7 +287,9 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   
   const [logJournalTitle, setLogJournalTitle] = useState('');
   const [logJournalText, setLogJournalText] = useState('');
-  const [mockPhotoUploaded, setMockPhotoUploaded] = useState(false);
+  const [logPhotoPath, setLogPhotoPath] = useState(null);
+  const [photoUploading, setPhotoUploading] = useState(false);
+  const [photoError, setPhotoError] = useState('');
   const [editingEntryWeek, setEditingEntryWeek] = useState(null);
   const [pendingDeleteWeek, setPendingDeleteWeek] = useState(null);
   const [showWipeModal, setShowWipeModal] = useState(false);
@@ -406,7 +425,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
       setLogSideEffects({ nausea: 0, fatigue: 0, headache: 0, reflux: 0, constipation: 0 });
       setLogJournalTitle('');
       setLogJournalText('');
-      setMockPhotoUploaded(false);
+      setLogPhotoPath(null);
     }
   }, [activeTab, editingEntryWeek]);
 
@@ -467,7 +486,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
               journalTitle: logJournalTitle || 'Weekly Log',
               journalText: logJournalText,
               aiTranslatedText: genericAiSummary,
-              photo: mockPhotoUploaded ? 'https://images.unsplash.com/photo-1518152006812-edab29b069ac?w=150&auto=format&fit=crop&q=60' : null
+              photo: logPhotoPath || null
             }
           : entry
       ));
@@ -485,7 +504,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
           journal_title: logJournalTitle || 'Weekly Log',
           journal_text: logJournalText,
           ai_translated_text: genericAiSummary,
-          photo: mockPhotoUploaded ? 'https://images.unsplash.com/photo-1518152006812-edab29b069ac?w=150&auto=format&fit=crop&q=60' : null
+          photo: logPhotoPath || null
         }).eq('id', editTarget.id).then((result) => {
           console.log('Cloud update result:', result);
         });
@@ -509,7 +528,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
       journalTitle: logJournalTitle || 'Weekly Log',
       journalText: logJournalText,
       aiTranslatedText: genericAiSummary,
-      photo: mockPhotoUploaded ? 'https://images.unsplash.com/photo-1518152006812-edab29b069ac?w=150&auto=format&fit=crop&q=60' : null
+      photo: logPhotoPath || null
     };
 
     const updated = [...entries, newEntry];
@@ -560,10 +579,28 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   });
   setLogJournalTitle(entry.journalTitle || '');
   setLogJournalText(entry.journalText || '');
-  setMockPhotoUploaded(!!entry.photo);
+  setLogPhotoPath(entry.photo || null);
   setEditingEntryWeek(entry.week);
   setActiveTab('log');
 };
+  const handlePhotoSelect = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    setPhotoError('');
+    setPhotoUploading(true);
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    const filePath = `${session?.user?.id}/${Date.now()}.${ext}`;
+    const { error } = await supabase.storage
+      .from('progress-photos')
+      .upload(filePath, file, { cacheControl: '3600', upsert: false });
+    if (error) {
+      setPhotoError('Could not upload photo: ' + error.message);
+      setPhotoUploading(false);
+      return;
+    }
+    setLogPhotoPath(filePath);
+    setPhotoUploading(false);
+  };
   const handleDeleteEntry = (weekNum) => {
     setPendingDeleteWeek(weekNum);
   };
@@ -1613,8 +1650,8 @@ onClick={() => {
 
                 <div className="flex flex-col sm:flex-row items-center gap-4 p-4 border border-dashed border-slate-300 rounded-2xl bg-slate-50">
                   <div className="w-20 h-20 rounded-xl bg-slate-200 flex items-center justify-center border border-slate-300 overflow-hidden">
-                    {mockPhotoUploaded ? (
-                      <img src="https://images.unsplash.com/photo-1518152006812-edab29b069ac?w=150&auto=format&fit=crop&q=60" alt="Progress representation" className="w-full h-full object-cover" />
+                    {logPhotoPath ? (
+                      <EntryPhoto path={logPhotoPath} />
                     ) : (
                       <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -1623,19 +1660,24 @@ onClick={() => {
                     )}
                   </div>
                   <div className="flex-1 text-center sm:text-left">
-                    <p className="font-bold text-xs text-slate-700">Simulate Progress Image Capture</p>
-                    <p className="text-[11px] text-slate-500 mt-0.5">Saved securely with your entry.</p>
-                    <button
-                      type="button"
-                      onClick={() => setMockPhotoUploaded(!mockPhotoUploaded)}
-                      className={`mt-2 px-3 py-1.5 rounded-lg text-xs font-bold transition duration-150 ${
-                        mockPhotoUploaded 
-                          ? 'bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200' 
-                          : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-xs'
-                      }`}
-                    >
-                      {mockPhotoUploaded ? 'Clear Selected Photo' : 'Simulate Camera Upload'}
-                    </button>
+                    <p className="font-bold text-xs text-slate-700">Progress Photo</p>
+                    <p className="text-[11px] text-slate-500 mt-0.5">Saved privately with your entry.</p>
+                    <div className="mt-2 flex items-center gap-2 justify-center sm:justify-start">
+                      <label className="px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 transition duration-150">
+                        {photoUploading ? 'Uploading…' : logPhotoPath ? 'Replace Photo' : 'Add Photo'}
+                        <input type="file" accept="image/*" onChange={handlePhotoSelect} disabled={photoUploading} className="hidden" />
+                      </label>
+                      {logPhotoPath && !photoUploading && (
+                        <button
+                          type="button"
+                          onClick={() => { setLogPhotoPath(null); setPhotoError(''); }}
+                          className="px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition duration-150"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                    {photoError && <p className="text-[11px] text-rose-600 mt-2">{photoError}</p>}
                   </div>
                 </div>
               </div>
@@ -1763,7 +1805,7 @@ onClick={() => {
                           <div>
                             <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Weekly Progress Photo</h5>
                             <div className="w-full h-24 rounded-lg overflow-hidden border border-slate-200">
-                              <img src={entry.photo} alt="Progress Thumbnail" className="w-full h-full object-cover" />
+                              <EntryPhoto path={entry.photo} />
                             </div>
                           </div>
                         )}
