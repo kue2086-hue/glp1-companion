@@ -290,6 +290,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   const [logPhotoPath, setLogPhotoPath] = useState(null);
   const [photoUploading, setPhotoUploading] = useState(false);
   const [photoError, setPhotoError] = useState('');
+  const [photoOriginalPath, setPhotoOriginalPath] = useState(null);
   const [editingEntryWeek, setEditingEntryWeek] = useState(null);
   const [pendingDeleteWeek, setPendingDeleteWeek] = useState(null);
   const [showWipeModal, setShowWipeModal] = useState(false);
@@ -430,6 +431,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
       setLogJournalTitle('');
       setLogJournalText('');
       setLogPhotoPath(null);
+      setPhotoOriginalPath(null);
     }
   }, [activeTab, editingEntryWeek]);
 
@@ -513,6 +515,9 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
           console.log('Cloud update result:', result);
         });
       }
+      if (photoOriginalPath && photoOriginalPath !== (logPhotoPath || null)) {
+        supabase.storage.from('progress-photos').remove([photoOriginalPath]);
+      }
       setEditingEntryWeek(null);
       setActiveTab('history');
       return;
@@ -584,6 +589,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   setLogJournalTitle(entry.journalTitle || '');
   setLogJournalText(entry.journalText || '');
   setLogPhotoPath(entry.photo || null);
+  setPhotoOriginalPath(entry.photo || null);
   setEditingEntryWeek(entry.week);
   setActiveTab('log');
 };
@@ -592,6 +598,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
     if (!file) return;
     setPhotoError('');
     setPhotoUploading(true);
+    const previousPath = logPhotoPath;
     const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
     const filePath = `${session?.user?.id}/${Date.now()}.${ext}`;
     const { error } = await supabase.storage
@@ -601,6 +608,9 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
       setPhotoError('Could not upload photo: ' + error.message);
       setPhotoUploading(false);
       return;
+    }
+    if (previousPath && previousPath !== photoOriginalPath) {
+      supabase.storage.from('progress-photos').remove([previousPath]);
     }
     setLogPhotoPath(filePath);
     setPhotoUploading(false);
@@ -614,6 +624,11 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
     if (target && target.id) {
       supabase.from('entries').delete().eq('id', target.id).then((result) => {
         console.log('Cloud delete result:', result);
+      });
+    }
+    if (target && target.photo) {
+      supabase.storage.from('progress-photos').remove([target.photo]).then((result) => {
+        console.log('Photo delete result:', result);
       });
     }
     setEntries(entries.filter(e => e.week !== pendingDeleteWeek));
@@ -1674,7 +1689,13 @@ onClick={() => {
                       {logPhotoPath && !photoUploading && (
                         <button
                           type="button"
-                          onClick={() => { setLogPhotoPath(null); setPhotoError(''); }}
+                          onClick={() => {
+                            if (logPhotoPath && logPhotoPath !== photoOriginalPath) {
+                              supabase.storage.from('progress-photos').remove([logPhotoPath]);
+                            }
+                            setLogPhotoPath(null);
+                            setPhotoError('');
+                          }}
                           className="px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition duration-150"
                         >
                           Remove
