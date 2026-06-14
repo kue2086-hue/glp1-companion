@@ -257,8 +257,8 @@ export default function App() {
   const [selectedMed, setSelectedMed] = useState(() => { const saved = localStorage.getItem('glp1_selectedMed'); return saved ? JSON.parse(saved) : MEDICATIONS[0]; });
   const [userDoseSchedule, setUserDoseSchedule] = useState(() => localStorage.getItem('glp1_doseSchedule') || '0.25mg');
 
-  const [weightGoal, setWeightGoal] = useState(215); 
-  const [userBirthday, setUserBirthday] = useState('1988-06-04'); 
+  const [weightGoal, setWeightGoal] = useState(() => { const saved = localStorage.getItem('glp1_weightGoal'); return saved ? JSON.parse(saved) : 215; }); 
+  const [userBirthday, setUserBirthday] = useState(() => localStorage.getItem('glp1_userBirthday') || '1988-06-04'); 
   const [showWelcomeModal, setShowWelcomeModal] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
 const [onboardingWeight, setOnboardingWeight] = useState('');
@@ -360,6 +360,10 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   useEffect(() => {
     localStorage.setItem('glp1_weightGoal', JSON.stringify(weightGoal));
   }, [weightGoal]);
+
+  useEffect(() => {
+    localStorage.setItem('glp1_userBirthday', userBirthday);
+  }, [userBirthday]);
 
   useEffect(() => {
     localStorage.setItem('glp1_selectedMed', JSON.stringify(selectedMed));
