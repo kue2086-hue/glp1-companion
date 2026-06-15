@@ -594,17 +594,51 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   setEditingEntryWeek(entry.week);
   setActiveTab('log');
 };
+  const compressImage = (file) =>
+    new Promise<Blob>((resolve) => {
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        const maxDim = 1200;
+        let width = img.width;
+        let height = img.height;
+        if (width > maxDim || height > maxDim) {
+          if (width >= height) {
+            height = Math.round(height * (maxDim / width));
+            width = maxDim;
+          } else {
+            width = Math.round(width * (maxDim / height));
+            height = maxDim;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob((blob) => { resolve(blob || file); }, 'image/jpeg', 0.75);
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        resolve(file);
+      };
+      img.src = objectUrl;
+    });
+
   const handlePhotoSelect = async (e) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
     setPhotoError('');
     setPhotoUploading(true);
     const previousPath = logPhotoPath;
-    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    const compressed = await compressImage(file);
+    const isJpeg = compressed.type === 'image/jpeg';
+    const ext = isJpeg ? 'jpg' : (file.name.split('.').pop() || 'jpg').toLowerCase();
     const filePath = `${session?.user?.id}/${Date.now()}.${ext}`;
     const { error } = await supabase.storage
       .from('progress-photos')
-      .upload(filePath, file, { cacheControl: '3600', upsert: false });
+      .upload(filePath, compressed, { cacheControl: '3600', upsert: false, contentType: compressed.type || 'image/jpeg' });
     if (error) {
       setPhotoError('Could not upload photo: ' + error.message);
       setPhotoUploading(false);
