@@ -76,12 +76,21 @@ function AuthScreen() {
   const handleAuth = async () => {
     setAuthError('');
     setAuthLoading(true);
+    const friendly = (msg) => {
+      const m = (msg || '').toLowerCase();
+      if (m.includes('invalid login credentials')) return "That email and password don't match. Please double-check and try again.";
+      if (m.includes('user already registered')) return 'An account with this email already exists. Try signing in instead.';
+      if (m.includes('email not confirmed')) return 'Please confirm your email address first — check your inbox for a verification link.';
+      if (m.includes('password should be at least')) return 'Your password needs to be at least 6 characters long.';
+      if (m.includes('unable to validate email') || m.includes('invalid format')) return "That email address doesn't look quite right. Please check it and try again.";
+      return msg || 'Something went wrong. Please try again.';
+    };
     if (authMode === 'signup') {
       const { error } = await supabase.auth.signUp({ email: authEmail, password: authPassword });
-      if (error) setAuthError(error.message);
+      if (error) setAuthError(friendly(error.message));
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email: authEmail, password: authPassword });
-      if (error) setAuthError(error.message);
+      if (error) setAuthError(friendly(error.message));
     }
     setAuthLoading(false);
   };
