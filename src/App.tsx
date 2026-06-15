@@ -259,7 +259,8 @@ export default function App() {
 
   const [weightGoal, setWeightGoal] = useState(() => { const saved = localStorage.getItem('glp1_weightGoal'); return saved ? JSON.parse(saved) : 215; }); 
   const [userBirthday, setUserBirthday] = useState(() => localStorage.getItem('glp1_userBirthday') || '1988-06-04'); 
-  const [showWelcomeModal, setShowWelcomeModal] = useState(true);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(() => localStorage.getItem('glp1_hideWelcome') !== 'true');
+  const [dontShowWelcome, setDontShowWelcome] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
 const [onboardingWeight, setOnboardingWeight] = useState('');
 const [onboardingGoal, setOnboardingGoal] = useState(''); 
@@ -677,7 +678,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `glp1-companion-backup-${new Date().toISOString().split('T')[0]}.json`;
+    link.download = `glp1-companion-backup-${new Date().toLocaleDateString('en-CA')}.json`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -1075,11 +1076,23 @@ onClick={() => {
             </div>
 
             <button
-              onClick={() => setShowWelcomeModal(false)}
+              onClick={() => {
+                localStorage.setItem('glp1_hideWelcome', dontShowWelcome ? 'true' : 'false');
+                setShowWelcomeModal(false);
+              }}
               className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm shadow-md transition duration-150 transform hover:scale-[1.02]"
             >
               Start Tracking with Confidence 🚀
             </button>
+            <label className="flex items-center justify-center gap-2 text-xs text-slate-500 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={dontShowWelcome}
+                onChange={() => setDontShowWelcome(!dontShowWelcome)}
+                className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+              />
+              <span>Don't show this welcome again</span>
+            </label>
             {entries.length <= 3 && (
               <button
                 onClick={() => {
@@ -2216,7 +2229,7 @@ onClick={() => {
                     <p className="text-xs text-slate-500 mt-0.5">Display the motivating introduction overlay on your dashboard again.</p>
                   </div>
                   <button
-                    onClick={() => setShowWelcomeModal(true)}
+                    onClick={() => { setDontShowWelcome(false); setShowWelcomeModal(true); }}
                     className="px-4 py-2 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-semibold text-slate-700 transition"
                   >
                     View Welcome Dialog
