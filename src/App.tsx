@@ -314,6 +314,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   const [useAiTranslation, setUseAiTranslation] = useState(true);
   const [reportModalOpen, setReportModalOpen] = useState(false);
   const [showToast, setShowToast] = useState(true);
+  const [lightboxPath, setLightboxPath] = useState(null);
 
   const sortedByDate = [...entries].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   const currentWeight = sortedByDate.length > 0 ? sortedByDate[0].weight : 220;
@@ -1829,7 +1830,7 @@ onClick={() => {
                         {entry.photo && (
                           <div>
                             <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Weekly Progress Photo</h5>
-                            <div className="rounded-lg overflow-hidden border border-slate-200">
+                            <div onClick={() => setLightboxPath(entry.photo)} className="rounded-lg overflow-hidden border border-slate-200 cursor-pointer hover:opacity-90 transition">
                               <EntryPhoto path={entry.photo} className="w-full h-auto" />
                             </div>
                           </div>
@@ -2389,6 +2390,21 @@ onClick={() => {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {lightboxPath && (
+        <div
+          onClick={() => setLightboxPath(null)}
+          className="fixed inset-0 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 z-50 cursor-zoom-out"
+        >
+          <button
+            onClick={() => setLightboxPath(null)}
+            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xl font-bold transition"
+          >
+            ✕
+          </button>
+          <EntryPhoto path={lightboxPath} className="max-w-full max-h-full object-contain rounded-lg shadow-2xl" />
         </div>
       )}
 
