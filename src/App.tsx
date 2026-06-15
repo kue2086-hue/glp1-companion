@@ -1139,7 +1139,6 @@ onClick={() => {
               </div>
               <div>
                 <h1 className="text-xl font-bold tracking-tight text-slate-950">GLP-1 Companion</h1>
-                <p className="text-[10px] uppercase font-semibold text-emerald-700 tracking-wider">Secure Personal Health Tracker</p>
               </div>
             </div>
 
