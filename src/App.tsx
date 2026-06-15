@@ -396,7 +396,7 @@ const [onboardingGoal, setOnboardingGoal] = useState('');
   }, [themeMode]);
 
   useEffect(() => {
-    if (isGoalReached && !hasCelebratedGoal && celebrationsEnabled) {
+    if (entries.length > 0 && isGoalReached && !hasCelebratedGoal && celebrationsEnabled) {
       triggerGoalCelebration();
     }
   }, [currentWeight, weightGoal, isGoalReached, hasCelebratedGoal, celebrationsEnabled]);
